@@ -14,10 +14,10 @@ import lombok.NoArgsConstructor;
 public class TipoProductoEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_tprod")
+    @Column(name = "id_tprod", nullable = false)
     private Long id;
 
-    @Column(name="tipo")
+    @Column(name="tipo", nullable = false)
     private String tipo;
 
 }

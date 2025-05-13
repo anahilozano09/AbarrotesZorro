@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ClienteServiceImpl implements ClienteService {
@@ -19,5 +20,16 @@ public class ClienteServiceImpl implements ClienteService {
     @Override
     public List<ClienteEntity> findAll() {
         return clienteRepository.findAll();
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        clienteRepository.deleteById(id);
+    }
+
+    @Override
+    public ClienteEntity findById(Long id) {
+        Optional<ClienteEntity> op = clienteRepository.findById(id);
+        return op.orElse(null);
     }
 }

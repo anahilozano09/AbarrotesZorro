@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ProveedorServiceImpl implements ProveedorService {
@@ -19,5 +20,16 @@ public class ProveedorServiceImpl implements ProveedorService {
     @Override
     public List<ProveedorEntity> findAll() {
         return proveedorRepository.findAll();
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        proveedorRepository.deleteById(id);
+    }
+
+    @Override
+    public ProveedorEntity findById(Long id) {
+        Optional<ProveedorEntity> op = proveedorRepository.findById(id);
+        return op.orElse(null);
     }
 }

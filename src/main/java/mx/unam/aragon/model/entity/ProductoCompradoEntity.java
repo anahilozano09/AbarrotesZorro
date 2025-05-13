@@ -14,18 +14,15 @@ import lombok.NoArgsConstructor;
 public class ProductoCompradoEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_prodcomp")
+    @Column(name = "id_prodcomp", nullable = false)
     private Long id;
 
-    @Column(name="cantidad")
-    private String cantidad;
-
-    @Column(name="precio_unit")
-    private Double precioUnit;
+    @Column(name="cantidad", nullable = false)
+    private Integer cantidad;
 
     @ManyToOne
     @JoinColumn(name = "id_pro",nullable = false)
-    private RolEmpleadoEntity idPro;
+    private ProductoEntity producto;
 
 
 }

@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CantidadProductoAlmacenServiceImpl implements CantidadProductoAlmacenService {
@@ -21,5 +22,17 @@ public class CantidadProductoAlmacenServiceImpl implements CantidadProductoAlmac
     @Override
     public List<CantidadProductoAlmacenEntity> findAll() {
         return cantidadProductoAlmacenRepository.findAll();
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        cantidadProductoAlmacenRepository.deleteById(id);
+    }
+
+    @Override
+    public CantidadProductoAlmacenEntity findById(Long id) {
+        Optional<CantidadProductoAlmacenEntity> op = cantidadProductoAlmacenRepository.findById(id);
+        return op.orElse(null);
+
     }
 }

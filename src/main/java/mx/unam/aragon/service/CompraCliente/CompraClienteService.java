@@ -7,4 +7,6 @@ import java.util.List;
 public interface CompraClienteService {
     CompraClienteEntity save(CompraClienteEntity compraCliente);
     List<CompraClienteEntity> findAll();
+    void deleteById(Long id);
+    CompraClienteEntity findById(Long id);
 }

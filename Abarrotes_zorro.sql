@@ -5,13 +5,13 @@ USE Abarrotes_zorro;
 
 -- Tabla de roles de empleados
 CREATE TABLE rol_empleado (
-    id_rol INT PRIMARY KEY,
+    id_rol INT PRIMARY KEY NOT NULL auto_increment,
     rol VARCHAR(50) NOT NULL
 );
 
 -- Tabla de empleados
 CREATE TABLE empleado (
-    id_emp INT PRIMARY KEY,
+    id_emp INT PRIMARY KEY NOT NULL auto_increment,
     nombre VARCHAR(100) NOT NULL,
     usuario VARCHAR(50) NOT NULL ,
     password VARCHAR(100) NOT NULL ,
@@ -22,56 +22,54 @@ CREATE TABLE empleado (
 
 -- Tabla de clientes
 CREATE TABLE cliente (
-    id_clien INT PRIMARY KEY,
+    id_clien INT PRIMARY KEY auto_increment,
     nombre VARCHAR(100) NOT NULL ,
-    num_cuenta VARCHAR(12),
-    email VARCHAR(100),
-    telefono VARCHAR(100)
+    num_cuenta VARCHAR(12) NOT NULL ,
+    email VARCHAR(100) NOT NULL ,
+    telefono VARCHAR(100) NOT NULL
 );
 
 -- Tabla de tipo del producto
 CREATE TABLE tipo_producto (
-    id_tprod INT PRIMARY KEY,
+    id_tprod INT PRIMARY KEY NOT NULL auto_increment,
     tipo VARCHAR(255)
 );
 
 -- Tabla de productos
 CREATE TABLE producto (
-    id_pro INT PRIMARY KEY,
-    nombre VARCHAR(100),
-    precio DOUBLE,
-    img_pro VARCHAR(255),
-    id_tprod INT,
+    id_pro INT PRIMARY KEY NOT NULL auto_increment,
+    nombre VARCHAR(100) NOT NULL ,
+    precio DOUBLE NOT NULL,
+    img_pro VARCHAR(255) NOT NULL ,
+    id_tprod INT NOT NULL ,
     FOREIGN KEY (id_tprod) REFERENCES tipo_producto(id_tprod)
 );
 
 
 -- Tabla de productos en almacén
 CREATE TABLE cantidad_producto_almacen (
-    id_cad INT PRIMARY KEY,
-    id_pro INT,
-    cantidad INT,
-    precio_unit DOUBLE,
+    id_cad INT PRIMARY KEY NOT NULL auto_increment,
+    id_pro INT NOT NULL ,
+    cantidad INT NOT NULL ,
     FOREIGN KEY (id_pro) REFERENCES producto(id_pro)
 );
 
 -- Tabla de productos comprados
 CREATE TABLE producto_comprado (
-    id_prodcomp INT PRIMARY KEY,
-    id_pro INT,
-    cantidad INT,
-    precio_unit DOUBLE,
+    id_prodcomp INT PRIMARY KEY NOT NULL auto_increment,
+    id_pro INT NOT NULL ,
+    cantidad INT NOT NULL ,
     FOREIGN KEY (id_pro) REFERENCES producto(id_pro)
 );
 
 -- Tabla de compras de clientes
 CREATE TABLE compra_cliente (
-    id_compra INT PRIMARY KEY,
-    id_cliente INT,
-    total DOUBLE,
-    id_emp INT,
-    id_prodcomp INT,
-    Fecha DATE,
+    id_compra INT PRIMARY KEY NOT NULL auto_increment,
+    id_cliente INT NOT NULL ,
+    total DOUBLE NOT NULL,
+    id_emp INT NOT NULL ,
+    id_prodcomp INT NOT NULL ,
+    fecha DATE NOT NULL ,
     FOREIGN KEY (id_cliente) REFERENCES cliente(id_clien),
     FOREIGN KEY (id_emp) REFERENCES empleado(id_emp),
     FOREIGN KEY (id_prodcomp) REFERENCES producto_comprado(id_prodcomp)
@@ -79,22 +77,22 @@ CREATE TABLE compra_cliente (
 
 -- Tabla de proveedores
 CREATE TABLE proveedor (
-    id_prov INT PRIMARY KEY,
-    Nombre VARCHAR(100),
-    id_pro INT,
-    Cantidad INT,
-    Email VARCHAR(100),
-    Telefono VARCHAR(100),
+    id_prov INT PRIMARY KEY NOT NULL auto_increment,
+    nombre VARCHAR(100) NOT NULL ,
+    id_pro INT NOT NULL ,
+    cantidad INT NOT NULL ,
+    email VARCHAR(100) NOT NULL ,
+    telefono VARCHAR(100) NOT NULL ,
     FOREIGN KEY (id_pro) REFERENCES producto(id_pro)
 );
 
 -- Tabla de histórico de productos
 CREATE TABLE historico_productos (
-    Id_Histo INT PRIMARY KEY,
-    id_cad INT,
-    id_prodcomp INT,
-    Cantidad INT,
-    Fecha DATE,
+    id_histo INT PRIMARY KEY NOT NULL auto_increment,
+    id_cad INT NOT NULL ,
+    id_prodcomp INT NOT NULL ,
+    cantidad INT NOT NULL ,
+    fecha DATE NOT NULL ,
     FOREIGN KEY (id_cad) REFERENCES cantidad_producto_almacen(id_cad),
     FOREIGN KEY (id_prodcomp) REFERENCES producto_comprado(id_prodcomp)
 );

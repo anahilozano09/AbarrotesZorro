@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class TipoProductoServiceImpl implements TipoProductoService {
@@ -19,5 +20,16 @@ public class TipoProductoServiceImpl implements TipoProductoService {
     @Override
     public List<TipoProductoEntity> findAll() {
         return tipoProductoRepository.findAll();
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        tipoProductoRepository.deleteById(id);
+    }
+
+    @Override
+    public TipoProductoEntity findById(Long id) {
+        Optional<TipoProductoEntity> op = tipoProductoRepository.findById(id);
+        return op.orElse(null);
     }
 }

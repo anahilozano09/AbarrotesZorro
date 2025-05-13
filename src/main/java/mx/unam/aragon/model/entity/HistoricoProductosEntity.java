@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Entity(name = "historico_productos")
@@ -16,22 +17,22 @@ import java.util.Date;
 public class HistoricoProductosEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_Histo")
+    @Column(name = "id_histo", nullable = false)
     private Long id;
 
-    @Column(name="Cantidad")
-    private String cantidad;
+    @Column(name="cantidad", nullable = false)
+    private Integer cantidad;
 
-    @Column(name="Fecha")
-    private Date fecha;
+    @Column(name="fecha", nullable = false)
+    private LocalDate fecha;
 
     @ManyToOne
     @JoinColumn(name = "id_cad",nullable = false)
-    private RolEmpleadoEntity idCad;
+    private CantidadProductoAlmacenEntity cantidadProductoAlmacen;
 
     @ManyToOne
     @JoinColumn(name = "id_prodcomp",nullable = false)
-    private RolEmpleadoEntity idProdcomp;
+    private ProductoCompradoEntity productoComprado;
 
 }
 

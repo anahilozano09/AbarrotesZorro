@@ -7,4 +7,6 @@ import java.util.List;
 public interface RolEmpleadoService {
     RolEmpleadoEntity save(RolEmpleadoEntity rolEmpleado);
     List<RolEmpleadoEntity> findAll();
+    void deleteById(Long id);
+    RolEmpleadoEntity findById(Long id);
 }
