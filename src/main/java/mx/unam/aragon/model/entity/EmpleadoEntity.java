@@ -6,7 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Entity(name = "Empleado")
+@Entity(name = "empleado")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -17,16 +17,16 @@ public class EmpleadoEntity {
     @Column(name = "id_emp")
     private Long id;
 
-    @Column(name="Nombre")
+    @Column(name="nombre")
     private String nombre;
 
-    @Column(name="Usuario")
+    @Column(name="usuario")
     private String usuario;
 
-    @Column(name="Password")
-    private String contrasena;
+    @Column(name="password")
+    private String password;
 
-    @Column(name="Email")
+    @Column(name="email")
     private String email;
 
     @ManyToOne

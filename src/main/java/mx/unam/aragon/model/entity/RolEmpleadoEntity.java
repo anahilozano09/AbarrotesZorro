@@ -6,7 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Entity(name = "Rol_Empleado")
+@Entity(name = "rol_Empleado")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -17,7 +17,7 @@ public class RolEmpleadoEntity {
     @Column(name = "id_rol")
     private Long id;
 
-    @Column(name="Rol")
+    @Column(name="rol")
     private String rol;
 
 }

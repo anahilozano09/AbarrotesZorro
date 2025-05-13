@@ -6,27 +6,18 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Entity(name = "cliente")
+@Entity(name = "tipo_producto")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ClienteEntity {
+public class TipoProductoEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_clien")
+    @Column(name = "id_tprod")
     private Long id;
 
-    @Column(name="nombre")
-    private String nombre;
-
-    @Column(name="num_cuenta")
-    private Integer cuenta;
-
-    @Column(name="email")
-    private String email;
-
-    @Column(name="telefono")
-    private Integer telefono;
+    @Column(name="tipo")
+    private String tipo;
 
 }
