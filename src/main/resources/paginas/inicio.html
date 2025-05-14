@@ -1,23 +1,32 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      lang="es">
-<head th:replace="~{plantillas/plantilla :: head}"></head>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{plantillas/plantilla :: head}">
+    <title>Abarrotes el Zorro - Inicio</title>
+</head>
 <body>
 <header th:replace="~{plantillas/plantilla :: header}"></header>
+
 <main class="container text-center p-3 mb-5 bg-body-tertiary rounded">
     <h1>Abarrotes el Zorro</h1>
     <h1 th:text="${contenido}"></h1>
+
+    <div th:if="${param.error}" class="alert alert-danger mt-3">
+        Usuario o contraseña incorrectos
+    </div>
+    <div th:if="${param.logout}" class="alert alert-success mt-3">
+        Has cerrado sesión correctamente
+    </div>
 </main>
+
 <div class="login-container">
     <h2>Iniciar Sesión</h2>
-    <form action="/login" method="post">
-        <input type="text" name="username" placeholder="Usuario" required>
+    <form th:action="@{/login}" method="POST">  <!-- Asegúrate que coincida con tu SecurityConfig -->
+        <input type="text" name="username" placeholder="Usuario" required>  <!-- Campo clave: name="username" -->
         <input type="password" name="password" placeholder="Contraseña" required>
-        <button type="submit">Entrar</button>
+        <button type="submit">Ingresar</button>
     </form>
-    <div class="footer">
-        ¿Olvidaste tu contraseña?
-    </div>
+
 </div>
+
 </body>
 </html>

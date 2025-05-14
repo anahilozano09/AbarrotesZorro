@@ -13,9 +13,10 @@ CREATE TABLE rol_empleado (
 CREATE TABLE empleado (
     id_emp INT PRIMARY KEY NOT NULL auto_increment,
     nombre VARCHAR(100) NOT NULL,
-    usuario VARCHAR(50) NOT NULL ,
+    username VARCHAR(50) NOT NULL ,
     password VARCHAR(100) NOT NULL ,
     email VARCHAR(100) NOT NULL ,
+    telefono VARCHAR(100) NOT NULL,
     id_rol INT NOT NULL ,
     FOREIGN KEY (id_rol) REFERENCES rol_empleado(id_rol)
 );

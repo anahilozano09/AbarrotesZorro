@@ -32,4 +32,9 @@ public class RolEmpleadoServiceImpl implements RolEmpleadoService {
         Optional<RolEmpleadoEntity> op = rolEmpleadoRepository.findById(id);
         return op.orElse(null);
     }
+
+    @Override
+    public Optional<RolEmpleadoEntity> findByRol(String rol) {
+        return rolEmpleadoRepository.findByRol(rol);
+    }
 }
