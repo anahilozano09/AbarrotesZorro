@@ -30,7 +30,7 @@ public class SecurityConfig {
         return http
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/login",
-                                "/css/**", "/js/**", "/images/**").permitAll()
+                                "/css/**", "/js/**", "/image/**",  "/bootstrap/**").permitAll()
                         .requestMatchers("/admin/**").hasAuthority("ROLE_Administrador")
                         .requestMatchers("/caja/**").hasAuthority("ROLE_Cajero")
                         .anyRequest().authenticated()
@@ -79,7 +79,7 @@ public class SecurityConfig {
             if (!empleadoService.existsByUsername("admin")) {
                 empleadoService.save(
                         new EmpleadoEntity(null, "Admin Principal", "admin",
-                                encoder.encode("Admin123"),
+                                encoder.encode("}"),
                                 "anatrikilozano@gmail.com","5580104964", rolAdmin)
                 );
             }
