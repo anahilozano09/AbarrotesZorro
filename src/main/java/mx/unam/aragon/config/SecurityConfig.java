@@ -79,7 +79,7 @@ public class SecurityConfig {
             if (!empleadoService.existsByUsername("admin")) {
                 empleadoService.save(
                         new EmpleadoEntity(null, "Admin Principal", "admin",
-                                encoder.encode("}"),
+                                encoder.encode("Admin123"),
                                 "anatrikilozano@gmail.com","5580104964", rolAdmin)
                 );
             }
