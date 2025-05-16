@@ -113,7 +113,10 @@ INSERT INTO `tipo_producto` VALUES
     (8,'Automedicacion'),
     (9,'Higiene personal'),
     (10,'Jarceria'),
-    (11,'Uso domestico');
+    (11,'Uso domestico'),
+    (12,'Botanas'),
+    (13,'Frutas y verduras'),
+    (14,'Congelados y helados');
 
 INSERT INTO `producto` VALUES
     (1,'Arroz',79.04,'Arroz.png',1),
@@ -123,7 +126,7 @@ INSERT INTO `producto` VALUES
     (5,'Sal',90.13,'Sal.png',1),
     (6,'Harina',63.83,'Harina.png',1),
     (7,'Pasta',18.16,'Pasta.png',1),
-    (8,'Sopa Maruchan',38.21,'Sopa_Maruchan.png',1),
+    (8,'Sopa Maruchan',38.21,'Sopa_Maruchan.png',7),
     (9,'Pan Bimbo',44.98,'Pan_Bimbo.png',5),
     (10,'Leche Lala',77.33,'Leche_Lala.png',3),
     (11,'Coca Cola',38.62,'Coca_Cola.png',6),
