@@ -1,94 +1,101 @@
-
-    /* Estilos generales */
+/* Style.css - Estilos exclusivos para la página de inicio (home-page) */
 body {
+    background-color: #88141B; /* Fondo rojo */
+    font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #FFDB58; /* Amarillo mostaza */
-    font-family: Arial, sans-serif;
+}
+
+/* Imagen alineada arriba a la izquierda */
+body.home-page > div:first-of-type img {
+    display: block;
+    margin: 20px;
+}
+
+/* Contenedor principal centrado vertical y horizontalmente */
+body.home-page > div:nth-of-type(2) {
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 100vh;
-}
-
-.page-container {
-    width: 90%;
-    max-width: 800px;
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
-    padding: 20px;
-    position: relative;
-    text-align: center;
-}
-
-/* Imagen pequeña arriba a la izquierda */
-.image-section {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    width: 80px;
-    height: 80px;
-    background-image: url('https://via.placeholder.com/80'); /* Reemplaza con tu imagen */
-    background-size: cover;
-    border-radius: 50%;
-}
-
-/* Mensajes de error/éxito */
-.alert {
-    padding: 10px;
-    margin-bottom: 15px;
-    border-radius: 5px;
-}
-.alert-danger {
-    background-color: #f8d7da;
-    color: #721c24;
-}
-.alert-success {
-    background-color: #d4edda;
-    color: #155724;
-}
-
-/* Formulario centrado */
-.login-container {
-    margin: 30px auto;
-    width: 100%;
-    max-width: 400px;
-}
-.login-container h2 {
-    color: #333;
-    margin-bottom: 20px;
-}
-.login-container form {
-    display: flex;
     flex-direction: column;
-    gap: 15px;
+    min-height: calc(100vh - 300px); /* Ajustado por el espacio de la imagen */
 }
-.login-container input {
-    padding: 12px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
+
+body.home-page form input,
+body.home-page form button {
+    padding: 10px;
     font-size: 16px;
 }
-.login-container button {
-    padding: 12px;
-    background-color: #4CAF50;
+
+body.home-page form button {
+    background-color: #b71c1c;
     color: white;
     border: none;
-    border-radius: 5px;
     cursor: pointer;
-    font-size: 16px;
-}
-.login-container button:hover {
-    background-color: #45a049;
+    transition: background-color 0.3s ease;
 }
 
-/* Texto principal */
-.text-section h1 {
-    color: #333;
-    margin-top: 20px;
+body.home-page form button:hover {
+    background-color: #d32f2f;
 }
-.text-section h2 {
-    color: #666;
-    font-size: 18px;
+body.home-page form .alert {
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 14px;
 }
+
+body.home-page form .alert-danger {
+    background-color: #ffcdd2;
+    color: #b71c1c;
+}
+
+body.home-page form .alert-success {
+    background-color: #c8e6c9;
+    color: #1b5e20;
+}
+/* Centrar todo el contenido del formulario */
+body.home-page form {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* 👈 Esto centra los hijos horizontalmente */
+    gap: 10px;
+    width: 700px;
+    margin: 0 auto;
+}
+
+/* Inputs con tamaño fijo, esquinas curvas y centrados */
+body.home-page form input {
+    width: 400px;
+    height: 40px;
+    padding: 8px 12px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-sizing: border-box;
+    text-align: center; /* Opcional: centra el texto dentro del input */
+}
+
+/* Botón con estilo similar */
+body.home-page form button {
+    width: 350px;
+    height: 40px;
+    border-radius: 8px;
+    background-color: #b71c1c;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+body.home-page form button:hover {
+    background-color: #d32f2f;
+}
+
+

@@ -3,40 +3,31 @@
 <head th:replace="~{plantillas/plantilla :: head}">
     <title>Abarrotes el Zorro - Inicio</title>
 </head>
-<body>
-<header th:replace="~{plantillas/plantilla :: header}">
+<body class="home-page">
 
-</header>
-
-<div class="page-container">
-    <div class="image-section">
-        <!-- Imagen se establece desde el CSS como fondo -->
-    </div>
-
-    <div class="text-section">
-        <main>
+<div>
+    <br/> <img th:src="@{/image/logo.jpeg}" height="150" width="300"/>
+</div>
+<div>
+    <div>
+        <form th:action="@{/login}" method="POST">
             <h1>Abarrotes el Zorro</h1>
             <h2 th:text="${contenido}"></h2>
 
-            <div th:if="${param.error}" class="alert alert-danger mt-3">
+            <h2>Iniciar Sesión</h2>
+            <!-- Mensajes de error y logout dentro del formulario -->
+            <div th:if="${param.error}" class="alert alert-danger">
                 Usuario o contraseña incorrectos
             </div>
-            <div th:if="${param.logout}" class="alert alert-success mt-3">
+            <div th:if="${param.logout}" class="alert alert-success">
                 Has cerrado sesión correctamente
             </div>
-        </main>
-    </div>
 
-    <div class="login-container">
-        <h2>Iniciar Sesión</h2>
-        <form th:action="@{/login}" method="POST">
             <input type="text" name="username" placeholder="Usuario" required>
             <input type="password" name="password" placeholder="Contraseña" required>
             <button type="submit">Ingresar</button>
         </form>
     </div>
 </div>
-
-
 </body>
 </html>
