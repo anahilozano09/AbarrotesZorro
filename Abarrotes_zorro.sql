@@ -27,7 +27,7 @@ CREATE TABLE cliente (
     nombre VARCHAR(100) NOT NULL ,
     num_cuenta VARCHAR(12) NOT NULL ,
     email VARCHAR(100) NOT NULL ,
-    telefono VARCHAR(100) NOT NULL
+    telefono VARCHAR(12) NOT NULL
 );
 
 -- Tabla de tipo del producto
@@ -101,6 +101,12 @@ CREATE TABLE historico_productos (
 INSERT INTO `rol_empleado` VALUES
     (1,'Administrador'),
     (2,'Cajero');
+
+INSERT INTO `cliente` VALUES
+                          (1,'Jose Perez','123456789252','clientepruebaspring@gmail.com','228844317623'),
+                          (2,'Alondra Ramos', '425459789252', 'anatrikilozano@gmail.com','5580104964'),
+                          (3,'Diego Arreola', '227153789252', 'diego23arreola@gmail.com','5577540590');
+
 
 INSERT INTO `tipo_producto` VALUES
     (1,'Abarrotes'),
