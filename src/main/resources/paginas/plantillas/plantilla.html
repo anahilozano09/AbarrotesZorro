@@ -4,50 +4,65 @@
       lang="es">
 <head th:fragment="head">
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Abarrotes Zorro</title>
     <link th:href="@{/bootstrap/css/bootstrap.min.css}" rel="stylesheet">
     <link th:href="@{/bootstrap/css/Style.css}" rel="stylesheet">
 </head>
-<body class="home-page">
-<div class="page-container d-flex flex-column min-vh-100">
-    <header th:fragment="header">
-        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-            <div class="container-fluid">
-                <!-- Logo a la izquierda -->
-                <a class="navbar-brand d-flex align-items-center" href="#">
-                    <img th:src="@{/image/logo.jpeg}" alt="Logo" width="60" height="40" class="d-inline-block align-text-top me-2">
-                    Abarrotes Zorro
-                </a>
+<body class="d-flex flex-column min-vh-100">
+<header th:fragment="header">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center" href="#">
+                <img th:src="@{'/external-images/logo.jpeg'}"  alt="Logo" width="60" height="40" class="d-inline-block align-text-top me-2">
+                Abarrotes Zorro
+            </a>
 
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
 
-                <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                        <li class="nav-item" sec:authorize="hasRole('ADMIN')">
-                            <a class="nav-link" th:href="@{/admin}">Inicio Admin</a>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <div class="d-flex w-100">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <!-- Parte del administrador -->
+                        <li class="nav-item" sec:authorize="hasAuthority('ROLE_Administrador')">
+                            <a class="nav-link" th:href="@{/admin}">Inicio</a>
                         </li>
-                        <li class="nav-item" sec:authorize="hasRole('CAJERO')">
-                            <a class="nav-link" th:href="@{/cajero}">Inicio Cajero</a>
+                        <li class="nav-item" sec:authorize="hasAuthority('ROLE_Administrador')">
+                            <a class="nav-link" th:href="@{/admin/almacen}">Almacen</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" th:href="@{/logout}">Cerrar Sesión</a>
+                        <!-- Parte del cajero -->
+                        <li class="nav-item" sec:authorize="hasAuthority('ROLE_Cajero')">
+                            <a class="nav-link" th:href="@{/cajero}">Inicio</a>
                         </li>
+                    </ul>
+
+                    <ul class="navbar-nav">
+                        <div class="d-flex" sec:authorize="isAuthenticated()">
+                            <form th:action="@{/logout}" method="post">
+                                <button class="btn btn-outline-light" type="submit">
+                                    Cerrar Sesión
+                                </button>
+                            </form>
+                        </div>
                     </ul>
                 </div>
             </div>
-        </nav>
-    </header>
-
-    <!-- FOOTER -->
-    <footer th:fragment="footer">
-        <div class="text-center py-4" style="background-color: #f1f1f1;">
-            <img th:src="@{/image/logo.jpeg}" alt="Logo" width="60" class="mb-2">
-            <p class="mb-1">Contáctanos: contacto@abarroteszorro.com | Tel: 555-123-4567</p>
-            <small>&copy; 2025 Abarrotes Zorro. Todos los derechos reservados.</small>
         </div>
-    </footer>
+    </nav>
+</header>
 
-</div>
+<footer th:fragment="footer" class="mt-auto">
+    <div class="container-fluid bg-dark text-white py-4">
+        <div class="container text-center">
+            <img th:src="@{'/external-images/logo.jpeg'}"  alt="Logo" width="60" class="mb-3">
+            <p class="mb-1">Contáctanos: contacto@abarroteszorro.com | Tel: 555-123-4567</p>
+            <p class="mb-0">&copy; 2025 Abarrotes Zorro. Todos los derechos reservados.</p>
+        </div>
+    </div>
+</footer>
+
+<script th:src="@{/bootstrap/js/bootstrap.bundle.min.js}"></script>
 </body>
+</html>

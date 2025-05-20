@@ -27,7 +27,11 @@ public class ProductoEntity {
     private String imagen;
 
     @ManyToOne
-    @JoinColumn(name = "id_tprd",nullable = false)
+    @JoinColumn(name = "id_tprod",nullable = false)
     private TipoProductoEntity tipoProducto;
+
+    @ManyToOne
+    @JoinColumn(name = "id_prov", nullable = false)
+    private ProveedorEntity proveedor;
 
 }

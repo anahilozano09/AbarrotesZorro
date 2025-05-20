@@ -1,4 +1,3 @@
-<!-- paginas/admin/inicio.html -->
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity6"
@@ -8,10 +7,11 @@
 
 <header th:replace="plantillas/plantilla :: header"></header>
 
-<main class="container mt-4">
-  <h1 th:text="${contenido}">¡Bienvenido, Administrador!</h1>
-  <p>Contenido exclusivo del administrador.</p>
-  <p> Waawawawa</p>
+<main class="bg-white py-4 flex-grow-1">
+  <div class="container mt-4">
+    <h1 th:text="${contenido}"></h1>
+  </div>
+
 </main>
 
 <footer th:replace="plantillas/plantilla :: footer"></footer>

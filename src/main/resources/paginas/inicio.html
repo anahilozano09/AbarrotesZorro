@@ -6,7 +6,7 @@
 <body class="home-page">
 
 <div>
-    <br/> <img th:src="@{/image/logo.jpeg}" height="150" width="300"/>
+    <br/> <img th:src="@{'/external-images/logo.jpeg'}" height="150" width="300"/>
 </div>
 <div>
     <div>
@@ -15,7 +15,6 @@
             <h2 th:text="${contenido}"></h2>
 
             <h2>Iniciar Sesión</h2>
-            <!-- Mensajes de error y logout dentro del formulario -->
             <div th:if="${param.error}" class="alert alert-danger">
                 Usuario o contraseña incorrectos
             </div>
