@@ -20,19 +20,16 @@ public class HistoricoProductosEntity {
     @Column(name = "id_histo", nullable = false)
     private Long id;
 
-    @Column(name="cantidad", nullable = false)
-    private Integer cantidad;
-
-    @Column(name="fecha", nullable = false)
-    private LocalDate fecha;
+    @Column(name="cantidad_act", nullable = false)
+    private Integer cantidadAct;
 
     @ManyToOne
     @JoinColumn(name = "id_cad",nullable = false)
     private CantidadProductoAlmacenEntity cantidadProductoAlmacen;
 
     @ManyToOne
-    @JoinColumn(name = "id_prodcomp",nullable = false)
-    private ProductoCompradoEntity productoComprado;
+    @JoinColumn(name = "id_compra",nullable = false)
+    private CompraClienteEntity compraCliente;
 
 }
 
