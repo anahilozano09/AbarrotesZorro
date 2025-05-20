@@ -20,17 +20,11 @@ public class ProveedorEntity {
     @Column(name="nombre", nullable = false)
     private String nombre;
 
-    @Column(name="cantidad", nullable = false)
-    private Integer cantidad;
-
     @Column(name="email", nullable = false)
     private String email;
 
     @Column(name="telefono", nullable = false)
     private String telefono;
 
-    @ManyToOne
-    @JoinColumn(name = "id_pro",nullable = false)
-    private ProductoEntity producto;
-
 }
+
