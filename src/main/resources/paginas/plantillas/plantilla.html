@@ -14,7 +14,7 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container-fluid">
             <a class="navbar-brand d-flex align-items-center" href="#">
-                <img th:src="@{'/external-images/logo.jpeg'}"  alt="Logo" width="60" height="40" class="d-inline-block align-text-top me-2">
+                <img th:src="@{'/external-images/logo.jpeg'}"  alt="Logo" width="60"  class="d-inline-block align-text-top me-2">
                 Abarrotes Zorro
             </a>
 
@@ -32,9 +32,15 @@
                         <li class="nav-item" sec:authorize="hasAuthority('ROLE_Administrador')">
                             <a class="nav-link" th:href="@{/admin/almacen}">Almacen</a>
                         </li>
+
+
+
                         <!-- Parte del cajero -->
                         <li class="nav-item" sec:authorize="hasAuthority('ROLE_Cajero')">
                             <a class="nav-link" th:href="@{/cajero}">Inicio</a>
+                        </li>
+                        <li class="nav-item" sec:authorize="hasAuthority('ROLE_Cajero')">
+                            <a class="nav-link" th:href="@{/cliente/alta-cliente}">Cliente Nuevo</a>
                         </li>
                     </ul>
 
@@ -53,10 +59,12 @@
     </nav>
 </header>
 
+
+
 <footer th:fragment="footer" class="mt-auto">
     <div class="container-fluid bg-dark text-white py-4">
         <div class="container text-center">
-            <img th:src="@{'/external-images/logo.jpeg'}"  alt="Logo" width="60" class="mb-3">
+            <img th:src="@{'/external-images/logo.jpeg'}"    alt="Logo" width="60" class="mb-3">
             <p class="mb-1">Contáctanos: contacto@abarroteszorro.com | Tel: 555-123-4567</p>
             <p class="mb-0">&copy; 2025 Abarrotes Zorro. Todos los derechos reservados.</p>
         </div>

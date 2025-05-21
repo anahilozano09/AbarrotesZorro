@@ -7,9 +7,66 @@
 
 <header th:replace="plantillas/plantilla :: header"></header>
 
-<main class="bg-white py-4 flex-grow-1">
-  <div class="container mt-4">
-    <h1 th:text="${contenido}"></h1>
+<main class="bg-white py-4 flex-grow-1 container text-center shadow-lg p-3 mt-5 mb-5 bg-body-tertiary rounded">
+  <div class="container mt-5">
+    <h1 class="text-center mb-5" th:text="${contenido}"></h1>
+
+    <!--Vista del administrador-->
+    <div class="d-flex justify-content-center gap-5 flex-wrap" sec:authorize="hasAuthority('ROLE_Administrador')">
+
+      <div class="card shadow" style="width: 18rem; height: 20rem;">
+        <div class="card-body">
+          <h4 class="card-title mb-5">Ver almacén</h4>
+          <p class="card-text mb-5">Ver los productos que hay actualmente en el almacen</p>
+          <a th:href="@{/admin/almacen}" class="btn btn-primary custom-button" style="width: 10rem; height: 3rem;">Ver</a>
+        </div>
+      </div>
+
+      <div class="card shadow" style="width: 18rem; height: 20rem;">
+        <div class="card-body">
+          <h4 class="card-title mb-5">Realizar pedido</h4>
+          <p class="card-text mb-5">Realiza un pedido a los proveedores</p>
+          <a th:href="@{/admin/almacen}" class="btn btn-primary custom-button" style="width: 10rem; height: 3rem;">Ver</a>
+        </div>
+      </div>
+
+      <div class="card shadow" style="width: 18rem; height: 20rem;">
+        <div class="card-body">
+          <h4 class="card-title mb-5">Histórico</h4>
+          <p class="card-text mb-5">Ve todos los registros de movimientos de los productos</p>
+          <a th:href="@{/admin/almacen}" class="btn btn-primary custom-button" style="width: 10rem; height: 3rem;">Ver</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+<!--Vista del cajero-->
+  <div class="d-flex justify-content-center gap-5 flex-wrap" sec:authorize="hasAuthority('ROLE_Cajero')">
+
+    <div class="card shadow" style="width: 18rem; height: 20rem;">
+      <div class="card-body">
+        <h4 class="card-title mb-5">Agregar cliente</h4>
+        <p class="card-text mb-5">Añadir al sistema un nuevo cliente</p>
+        <a href= # class="btn btn-primary custom-button" style="width: 10rem; height: 3rem;">Ver</a>
+      </div>
+    </div>
+
+    <div class="card shadow" style="width: 18rem; height: 20rem;">
+      <div class="card-body">
+        <h4 class="card-title mb-5">Realizar compra</h4>
+        <p class="card-text mb-5">Realiza la compra del cliente</p>
+        <a href=# class="btn btn-primary custom-button" style="width: 10rem; height: 3rem;">Ver</a>
+      </div>
+    </div>
+
+  </div>
+
+
+  <div class="d-flex justify-content-center mt-5">
+    <img th:src="@{'/external-images/zorro.gif'}" alt="Zorro animado" style="max-width: 300px; height: auto;">
+  </div>
+
   </div>
 
 </main>

@@ -1,6 +1,8 @@
 package mx.unam.aragon.controller.empleado.administrador;
 import mx.unam.aragon.model.entity.CantidadProductoAlmacenEntity;
+import mx.unam.aragon.model.entity.PedidoProveedorEntity;
 import mx.unam.aragon.service.CantidadProductoAlmacen.CantidadProductoAlmacenService;
+import mx.unam.aragon.service.PedidoProveedor.PedidoProveedorService;
 import mx.unam.aragon.service.Producto.ProductoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -17,6 +19,7 @@ public class AdministradorController {
 
     @Autowired
     CantidadProductoAlmacenService cantidadProductoAlmacenService;
+    PedidoProveedorService pedidoProveedorService;
 
     @PreAuthorize("hasAuthority('ROLE_Administrador')")
     @GetMapping
@@ -33,5 +36,15 @@ public class AdministradorController {
         model.addAttribute("contenido","Productos en Almacen");
         return "admin/almacen/lista-almacen";
     }
+
+
+//    @PreAuthorize("hasAuthority('ROLE_Administrador')")
+//    @GetMapping("pedidos")
+//    public String pedidos(Model model){
+//        List<PedidoProveedorEntity> lista = pedidoProveedorService.findAll();
+//        model.addAttribute("lista",lista);
+//        model.addAttribute("contenido","Pedidos a proveedor");
+//        return "admin/almacen/pedido-proveedor";
+//    }
 
 }

@@ -107,4 +107,36 @@ body.home-page form button:hover {
 .page-container main {
     flex: 1;
 }
+.card-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    height: 100%;
+    border-radius: 20px;
+}
+
+.custom-button {
+    background-color: #820E16;
+    border-bottom-color: #1a1d20;
+    font-size: 1.5rem;
+    color: white;
+}
+
+.custom-table {
+    text-align: center;
+    vertical-align: middle;
+    font-size: 1.5rem;
+}
+
+.custom-table td,
+.custom-table th {
+    vertical-align: middle !important;
+    text-align: center;
+}
+
+
+
+
 

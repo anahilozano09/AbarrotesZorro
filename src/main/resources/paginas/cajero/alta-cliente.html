@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      lang="es">
+<head th:replace="~{plantillas/plantilla :: head}"></head>
+<body>
+<header th:replace="~{plantillas/plantilla :: header}"></header>
+<main class="container text-center shadow-lg p-3 mt-5 mb-5 bg-body-tertiary rounded">
+    <h1>Contenido principal</h1>
+    <h1 th:text="${contenido}"></h1>
+    <form method="post" th:action="@{guardar-cliente}" th:object="${cliente}" >
+        <div th:if="${#fields.hasErrors('*')}" class='alert alert-danger' role="alert">
+            Verifique los siguientes inconvenientes
+            <ul>
+                <li th:each="err : ${#fields.errors('*')}" th:text="${err}"></li>
+            </ul>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-6">
+                <div class="form-floating">
+                    <input
+                            th:class="${#fields.hasErrors('nombre')}? 'form-control is-invalid':form-control"
+                            type="text" id="nombre"
+                            name="nombre"
+                            th:field="*{nombre}"
+                            placeholder="Jose Ramon">
+                    <label for="nombre">Nombre</label>
+                </div>
+                <div class="form-floating">
+                    <input
+                            th:class="${#fields.hasErrors('email')}? 'form-control is-invalid':form-control"
+                            type="text" id="email"
+                            name="email"
+                            th:field="*{email}"
+                            placeholder="JoseRamon@gmail.com">
+                    <label for="email">Email</label>
+                </div>
+                <div class="form-floating">
+                    <input
+                            th:class="${#fields.hasErrors('telefono')} ? 'form-control is-invalid' : 'form-control'"
+                            type="text" id="telefono"
+                            name="telefono"
+                            th:field="*{telefono}"
+                            placeholder="5500000000">
+                    <label for="telefono">Teléfono</label>
+                </div>
+
+                <div class="mb-3 row">
+                    <label for="numCuenta" class="col-sm-4 col-form-label">Tu número de cuenta es:</label>
+                    <div class="col-sm-6">
+                        <input
+                                type="text"
+                                id="numCuenta"
+                                name="numCuenta"
+                                th:field="*{numCuenta}"
+                                class="form-control"
+                                readonly>
+                    </div>
+                    <div class="col-sm-2">
+                        <button type="button" class="btn btn-primary" onclick="generarCuenta()">Generar</button>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+        <div class="col-8">
+            <br/>
+            <button type="submit" class="btn btn-primary">Guardar</button>
+        </div>
+    </form>
+    <div class="d-flex justify-content-center mt-5">
+        <img th:src="@{'/external-images/zorro.gif'}" alt="Zorro animado" style="max-width: 300px; height: auto;">
+    </div>
+</main>
+<footer th:replace="~{plantillas/plantilla :: footer}"></footer>
+<script>
+    function generarCuenta() {
+        const numCuenta = Math.floor(100000000000 + Math.random() * 900000000000);
+        document.getElementById('numCuenta').value = numCuenta;
+    }
+</script>
+</body>
+</html>
