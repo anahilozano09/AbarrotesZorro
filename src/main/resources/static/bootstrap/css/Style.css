@@ -85,13 +85,15 @@ body.home-page form input {
 /* Botón con estilo similar */
 body.home-page form button {
     width: 350px;
-    height: 40px;
+    height: 50px;
     border-radius: 8px;
-    background-color: #b71c1c;
     color: white;
     border: none;
     cursor: pointer;
     transition: background-color 0.3s ease;
+    background-color: #820E16;
+    border-bottom-color: #1a1d20;
+    font-size: 1.2rem;
 }
 
 body.home-page form button:hover {
@@ -123,6 +125,7 @@ body.home-page form button:hover {
     font-size: 1.5rem;
     color: white;
 }
+
 
 .custom-table {
     text-align: center;

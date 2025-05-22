@@ -51,10 +51,11 @@ public class ClienteController {
 
         // Guardar el cliente
         clienteService.save(cliente);
-
-        model.addAttribute("contenido", "Se almacenó con éxito");
-        model.addAttribute("cliente", new ClienteEntity()); // limpiar el formulario
+        model.addAttribute("nuevoNumCuenta", cliente.getNumCuenta());
+        model.addAttribute("cliente", new ClienteEntity()); // limpia el formulario
+        model.addAttribute("contenido", "Alta Cliente");
         return "cajero/alta-cliente";
+
     }
 
 
