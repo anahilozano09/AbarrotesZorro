@@ -9,8 +9,6 @@ public interface ClienteRepository extends JpaRepository<ClienteEntity,Long> {
     boolean existsByEmail(String email);
     boolean existsByTelefono(String telefono);
     boolean existsByNumCuenta(String numCuenta);
-    Optional<ClienteEntity> findByNumCuenta(String numCuenta);
-
-
+    
 }
 
