@@ -66,26 +66,18 @@ CREATE TABLE cantidad_producto_almacen (
     FOREIGN KEY (id_pro) REFERENCES producto(id_pro)
 );
 
-
--- Tabla de productos comprados
-CREATE TABLE producto_comprado (
-    id_prodcomp INT PRIMARY KEY NOT NULL auto_increment,
-    id_pro INT NOT NULL ,
-    cantidad INT NOT NULL ,
-    FOREIGN KEY (id_pro) REFERENCES producto(id_pro)
-);
-
 -- Tabla de compras de clientes
 CREATE TABLE compra_cliente (
     id_compra INT PRIMARY KEY NOT NULL auto_increment,
     id_cliente INT NOT NULL ,
-    total DOUBLE NOT NULL,
     id_emp INT NOT NULL ,
-    id_prodcomp INT NOT NULL ,
+    id_pro INT NOT NULL ,
+    cantidad INT NOT NULL ,
+    total DOUBLE NOT NULL,
     fecha DATE NOT NULL ,
     FOREIGN KEY (id_cliente) REFERENCES cliente(id_clien),
     FOREIGN KEY (id_emp) REFERENCES empleado(id_emp),
-    FOREIGN KEY (id_prodcomp) REFERENCES producto_comprado(id_prodcomp)
+    FOREIGN KEY (id_pro) REFERENCES producto(id_pro)
 );
 
 
@@ -501,28 +493,6 @@ INSERT INTO `cantidad_producto_almacen` VALUES
                                             (144,144,100),
                                             (145,145,100),
                                             (146,146,100);
-INSERT INTO `producto_comprado` VALUES
-                                    (1,9,1),
-                                    (2,12,2),
-                                    (3,17,4),
-                                    (4,3,2),
-                                    (5,28,1),
-                                    (6,38,1),
-                                    (7,2,4),
-                                    (8,107,1),
-                                    (9,130,6),
-                                    (10,30,4),
-                                    (11,116,4),
-                                    (12,82,2),
-                                    (13,48,2),
-                                    (14,110,6),
-                                    (15,117,4),
-                                    (16,66,3),
-                                    (17,83,5),
-                                    (18,97,5),
-                                    (19,11,2),
-                                    (20,118,3);
-
 
 -- INSERT INTO `compra_cliente` VALUES
 --                                  (1,1,44.98,2,1,'2025-02-22'),
