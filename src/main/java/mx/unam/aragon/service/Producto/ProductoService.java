@@ -1,6 +1,7 @@
 package mx.unam.aragon.service.Producto;
 
 import mx.unam.aragon.model.entity.ProductoEntity;
+import mx.unam.aragon.model.entity.TipoProductoEntity;
 
 import java.util.List;
 
@@ -9,4 +10,5 @@ public interface ProductoService {
     List<ProductoEntity> findAll();
     void deleteById(Long id);
     ProductoEntity findById(Long id);
+    ProductoEntity findByTipoProducto(TipoProductoEntity tipoProducto);
 }
