@@ -57,10 +57,6 @@ public class CajeroController {
             return "cajero/alta-cliente";
         }
 
-        // Generar número de cuenta único de 12 dígitos
-
-
-
         // Guardar el cliente
         clienteService.save(cliente);
         model.addAttribute("nuevoNumCuenta", cliente.getNumCuenta());
@@ -69,4 +65,5 @@ public class CajeroController {
         return "cajero/alta-cliente";
 
     }
+
 }

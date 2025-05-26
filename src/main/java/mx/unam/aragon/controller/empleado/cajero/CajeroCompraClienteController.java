@@ -6,6 +6,7 @@ import mx.unam.aragon.model.entity.TipoProductoEntity;
 import mx.unam.aragon.service.Cliente.ClienteService;
 import mx.unam.aragon.service.CompraCliente.CompraClienteService;
 import mx.unam.aragon.service.Producto.ProductoService;
+import mx.unam.aragon.service.TipoProducto.TipoProductoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -18,7 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@RequestMapping(value = "/cajero/compra-cliente")
+@RequestMapping(value = "alta-compraCliente")
 public class CajeroCompraClienteController {
 
     @Autowired
@@ -26,6 +27,9 @@ public class CajeroCompraClienteController {
 
     @Autowired
     ClienteService clienteService;
+
+    @Autowired
+    TipoProductoService tipoProductoService;
 
     @Autowired
     ProductoService productoService;
@@ -38,17 +42,17 @@ public class CajeroCompraClienteController {
         //Colocar una forma de buscar el cliente en el formulario
         model.addAttribute("cliente", clienteService.findAll());
         //Colocar una forma de buscar el tipo de producto en el formulario
-        model.addAttribute("productoTipo", productoService.findByTipoProducto(TipoProductoEntity = new TipoProductoEntity()));
+        model.addAttribute("tipoProducto", tipoProductoService.findAll());
         //Colocar una forma de buscar el producto en el formulario dependiendo del tipo de producto
         model.addAttribute("producto", productoService.findAll());
         model.addAttribute("contenido","Alta Pago");
-        return "pago/alta-pago";
+        return "cajero/alta-compraCliente";
     }
 
     @PreAuthorize("hasAuthority('ROLE_Cajero')")
     @PostMapping("guardar-compra")
     public String guardarCompra(@Valid @ModelAttribute(value = "compraCliente") CompraClienteEntity compraCliente,
-                                  BindingResult result, Model model){
+                                BindingResult result, Model model){
         if (result.hasErrors()) {
             for (ObjectError error : result.getAllErrors()) {
                 System.out.println("Error: " + error.getDefaultMessage());
