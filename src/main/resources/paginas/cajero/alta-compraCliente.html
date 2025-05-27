@@ -18,7 +18,9 @@
                     <br>
                     <input type="text" style="width: 80%; height: 35px" id="valorBusqueda" required/>
                     <button type="button" id="buscarClienteBtn" class="custom-button btn btn-success mt-2" style="font-size: 1.2rem">Buscar</button>
-                    <button type="button" class="custom-button btn btn-success mt-2" style="font-size: 1.2rem"><a th:ref="@{/cajero/alta-cliente}">Alta de cliente</a></button>
+                    <div class="d-flex justify-content-center">
+                        <a th:href="@{/cajero/alta-cliente}" class="btn btn-primary custom-button" style="width: 10rem; height: 2.7rem; font-size: 1.2rem;">Alta de cliente</a>
+                    </div>
                 </div>
 
 
@@ -57,7 +59,7 @@
                 </div>
 
             </form>
-
+        </div>
 
         <!-- 🛒 Carrito -->
         <div class="col-md-8 d-flex flex-column justify-content-between" style="min-height: 400px;">
@@ -90,6 +92,7 @@
     <div class="d-flex justify-content-center mt-5">
         <img th:src="@{'/external-images/zorro.gif'}" alt="Zorro animado" style="max-width: 300px; height: auto;">
     </div>
+
 </main>
 
 <footer th:replace="~{plantillas/plantilla :: footer}"></footer>
