@@ -1,52 +1,65 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      lang="es">
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head th:replace="~{plantillas/plantilla :: head}"></head>
 <body>
 <header th:replace="~{plantillas/plantilla :: header}"></header>
-<main class="container text-center shadow-lg p-3 mt-5 mb-5 bg-body-tertiary rounded">
-    <h1>Registrar Compra de Cliente</h1>
+<main class="container shadow-lg p-3 mt-5 mb-5 bg-body-tertiary rounded">
+    <h1 class="text-center">Registrar Compra de Cliente</h1>
 
+    <div class="flex-container">
+        <!-- 🧾 Formulario -->
+        <div class="form-container">
+            <form th:action="@{/alta-compraCliente/guardar-compra}" th:object="${compra}" method="post">
 
-    <form th:action="@{/alta-compraCliente/guardar-compra}" th:object="${compra}" method="post">
+                <!-- Búsqueda de Cliente -->
+                <div>
+                    <label for="numCuenta">Número de cuenta del cliente:</label>
+                    <input type="text" id="numCuenta" required/>
+                    <button type="button" id="buscarClienteBtn">Buscar</button>
+                </div>
+                <br/>
 
-        <!-- Selección de Cliente -->
-        <label for="cliente">Cliente:</label>
-        <select id="cliente" name="cliente.id" required>
-            <option value="">-- Selecciona un cliente --</option>
-            <option th:each="c : ${cliente}"
-                    th:value="${c.id}"
-                    th:text="${c.nombre + ' - ' + c.numCuenta}">
-            </option>
-        </select>
-        <br/><br/>
+                <!-- Nombre del cliente -->
+                <div id="nombreClienteContainer" style="display:none;">
+                    <strong>Cliente:</strong> <span id="nombreCliente"></span>
+                    <input type="hidden" name="cliente.id" id="clienteId"/>
+                </div>
+                <br/>
 
-        <!-- Selección de Tipo de Producto -->
-        <label for="tipoProducto">Tipo de Producto:</label>
-        <select id="tipoProducto" name="tipoProducto.id">
-            <option value="">-- Selecciona un tipo de producto --</option>
-            <option th:each="t : ${tipoProducto}"
-                    th:value="${t.id}"
-                    th:text="${t.tipo}">
-            </option>
-        </select>
-        <br/><br/>
+                <!-- Tipo de Producto -->
+                <label for="tipoProducto">Tipo de Producto:</label>
+                <select id="tipoProducto" name="tipoProducto.id">
+                    <option value="">-- Selecciona un tipo de producto --</option>
+                    <option th:each="t : ${tipoProducto}" th:value="${t.id}" th:text="${t.tipo}"></option>
+                </select>
+                <br/><br/>
 
-        <!-- Selección de Producto -->
-        <label for="producto">Producto:</label>
-        <select id="producto" name="producto.id" required>
-            <option value="">-- Selecciona un producto --</option>
-        </select>
+                <!-- Producto -->
+                <label for="producto">Producto:</label>
+                <select id="producto" name="producto.id" required>
+                    <option value="">-- Selecciona un producto --</option>
+                </select>
 
-        <br/><br/>
+                <br/><br/>
 
+                <!-- Enviar -->
+                <button type="submit">Registrar Compra</button>
+            </form>
+        </div>
 
-
-        <!-- Botón de envío -->
-        <button type="submit">Registrar Compra</button>
-    </form>
+        <!-- 📦 Detalle del Producto -->
+        <div class="detalle-container">
+            <h3>Detalle del Producto Seleccionado</h3>
+            <div class="detalle-info">
+                <p><strong>Nombre:</strong> <span id="productoNombre">N/A</span></p>
+                <p><strong>Precio:</strong> $<span id="productoPrecio">0.00</span></p>
+            </div>
+        </div>
+    </div>
 </main>
 <footer th:replace="~{plantillas/plantilla :: footer}"></footer>
+
+<!-- JS: Cargar productos por tipo -->
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         const tipoProductoSelect = document.getElementById("tipoProducto");
@@ -54,9 +67,8 @@
 
         tipoProductoSelect.addEventListener("change", function () {
             const tipoProductoId = this.value;
-
-            // Limpiar productos actuales
             productoSelect.innerHTML = '<option value="">-- Selecciona un producto --</option>';
+            resetDetalleProducto();
 
             if (tipoProductoId) {
                 fetch(`/api/productos?tipoProductoId=${tipoProductoId}`)
@@ -66,6 +78,8 @@
                             const option = document.createElement("option");
                             option.value = producto.id;
                             option.textContent = `${producto.nombre} - $${producto.precio.toFixed(2)}`;
+                            option.dataset.nombre = producto.nombre;
+                            option.dataset.precio = producto.precio;
                             productoSelect.appendChild(option);
                         });
                     })
@@ -74,6 +88,54 @@
                     });
             }
         });
+
+        productoSelect.addEventListener("change", function () {
+            const selectedOption = this.options[this.selectedIndex];
+            if (selectedOption && selectedOption.value) {
+                document.getElementById("productoNombre").textContent = selectedOption.dataset.nombre || "N/A";
+                document.getElementById("productoPrecio").textContent = parseFloat(selectedOption.dataset.precio).toFixed(2) || "0.00";
+            } else {
+                resetDetalleProducto();
+            }
+        });
+
+        function resetDetalleProducto() {
+            document.getElementById("productoNombre").textContent = "N/A";
+            document.getElementById("productoPrecio").textContent = "0.00";
+        }
+    });
+</script>
+
+<!-- JS: Buscar cliente -->
+<script>
+    document.getElementById("buscarClienteBtn").addEventListener("click", function () {
+        const numCuenta = document.getElementById("numCuenta").value.trim();
+
+        if (!numCuenta) {
+            alert("Por favor, ingresa un número de cuenta.");
+            return;
+        }
+
+        fetch(`/api/clientes/buscar?numCuenta=${encodeURIComponent(numCuenta)}`)
+            .then(response => {
+                if (!response.ok) throw new Error("Cliente no encontrado");
+                return response.json();
+            })
+            .then(data => {
+                document.getElementById("nombreCliente").textContent = data.nombre;
+                document.getElementById("clienteId").value = data.id;
+                document.getElementById("nombreClienteContainer").style.display = "block";
+                document.getElementById("tipoProducto").disabled = false;
+                document.getElementById("producto").disabled = false;
+            })
+            .catch(error => {
+                alert("Cliente no encontrado. Verifica el número de cuenta.");
+                document.getElementById("nombreClienteContainer").style.display = "none";
+                document.getElementById("clienteId").value = "";
+                document.getElementById("tipoProducto").disabled = true;
+                document.getElementById("producto").disabled = true;
+                resetDetalleProducto();
+            });
     });
 </script>
 
