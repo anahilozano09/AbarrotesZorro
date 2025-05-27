@@ -65,7 +65,7 @@
                         data.forEach(producto => {
                             const option = document.createElement("option");
                             option.value = producto.id;
-                            option.textContent = producto.nombre;
+                            option.textContent = `${producto.nombre} - $${producto.precio.toFixed(2)}`;
                             productoSelect.appendChild(option);
                         });
                     })
