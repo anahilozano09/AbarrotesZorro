@@ -53,5 +53,11 @@ public class ClienteServiceImpl implements ClienteService {
     public Optional<ClienteEntity> findByNumCuenta(String numCuenta) {
         return clienteRepository.findByNumCuenta(numCuenta.trim());
     }
+    public Optional<ClienteEntity> findByEmail(String email) {
+        return clienteRepository.findByEmail(email.trim());
+    }
+    public Optional<ClienteEntity> findByTelefono(String telefono) {
+        return clienteRepository.findByTelefono(telefono.trim());
+    }
 
 }

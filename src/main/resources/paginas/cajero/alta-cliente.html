@@ -79,7 +79,14 @@
         </div>
         <button class="btn btn-outline-success btn-sm custom-button" onclick="copiarCuenta()">Copiar</button>
     </div>
-
+    <br>
+    <div th:if="${nuevoNumCuenta}" >
+        <label class="d-flex justify-content-center" style="font-size: 1.3rem">Realizar Compra</label>
+        <br>
+        <div class="d-flex justify-content-center">
+            <a th:href="@{/alta-compraCliente}" class="btn btn-primary custom-button" style="width: 7rem; height: 3rem;font-size: 1.2rem">Comprar</a>
+        </div>
+    </div>
     <!-- Mostrar imagen -->
     <div class="d-flex justify-content-center mt-5">
         <img th:src="@{'/external-images/zorro.gif'}" alt="Zorro animado" style="max-width: 300px; height: auto;">

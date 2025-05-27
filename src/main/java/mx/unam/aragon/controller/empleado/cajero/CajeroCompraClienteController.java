@@ -70,10 +70,17 @@ public class CajeroCompraClienteController {
     }
 
 
-    // Buscar cliente
     @GetMapping("/api/clientes/buscar")
-    public ResponseEntity<Map<String, Object>> buscarClientePorNumCuenta(@RequestParam String numCuenta) {
-        Optional<ClienteEntity> clienteOpt = clienteService.findByNumCuenta(numCuenta);
+    public ResponseEntity<Map<String, Object>> buscarCliente(@RequestParam String valor) {
+        Optional<ClienteEntity> clienteOpt = clienteService.findByNumCuenta(valor);
+
+        if (!clienteOpt.isPresent()) {
+            clienteOpt = clienteService.findByEmail(valor);
+        }
+
+        if (!clienteOpt.isPresent()) {
+            clienteOpt = clienteService.findByTelefono(valor);
+        }
 
         return clienteOpt
                 .map(cliente -> {
@@ -85,6 +92,7 @@ public class CajeroCompraClienteController {
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body(Map.of("error", "Cliente no encontrado")));
     }
+
 
 
 

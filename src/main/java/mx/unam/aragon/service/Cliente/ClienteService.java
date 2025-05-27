@@ -14,6 +14,8 @@ public interface ClienteService {
     void deleteById(Long id);
     ClienteEntity findById(Long id);
     Optional<ClienteEntity> findByNumCuenta(String numCuenta);
+    Optional<ClienteEntity> findByEmail(String email);
+    Optional<ClienteEntity> findByTelefono(String telefono);
 
 
 
