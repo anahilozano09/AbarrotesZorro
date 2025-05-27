@@ -18,6 +18,7 @@
                     <br>
                     <input type="text" style="width: 80%; height: 35px" id="valorBusqueda" required/>
                     <button type="button" id="buscarClienteBtn" class="custom-button btn btn-success mt-2" style="font-size: 1.2rem">Buscar</button>
+                    <button type="button" class="custom-button btn btn-success mt-2" style="font-size: 1.2rem"><a th:ref="@{/cajero/alta-cliente}">Alta de cliente</a></button>
                 </div>
 
 
@@ -56,13 +57,7 @@
                 </div>
 
             </form>
-            <br>
-            <br>
-            <label class="d-flex justify-content-center" style="font-size: 1rem">No tienes cuenta? Crea una</label>
-            <div class="d-flex justify-content-center">
-                <a th:href="@{/cajero/alta-cliente}" class="btn btn-primary custom-button" style="width: 7rem; height: 3rem;font-size: 1.2rem">Crear</a>
-            </div>
-        </div>
+
 
         <!-- 🛒 Carrito -->
         <div class="col-md-8 d-flex flex-column justify-content-between" style="min-height: 400px;">
