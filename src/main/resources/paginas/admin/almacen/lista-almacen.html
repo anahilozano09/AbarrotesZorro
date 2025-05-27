@@ -7,7 +7,7 @@
 <main class="container text-center shadow-lg p-3 mt-5 mb-5 bg-body-tertiary rounded">
     <h1 class="mb-4" th:text="${contenido}"></h1>
     <div class="row mb-4 justify-content-center">
-        <div class="col-md-6">
+        <div class="col-md-8">
             <form th:action="@{/admin/almacen/tipoProducto}" method="get" class="row g-3 align-items-center">
                 <div class="col-md-8">
                     <select class="form-select" name="idTipoProducto" id="tipoProductoSelect">
@@ -15,7 +15,7 @@
                         <option th:each="tipo : ${listaTipoProducto}"
                                 th:value="${tipo.id}"
                                 th:text="${tipo.tipo}"
-                                th:selected="${idTipoSeleccionado != null} and ${idTipoSeleccionado == tipo.id}">
+                                th:selected="${idTipoSeleccionado != null and idTipoSeleccionado == tipo.id}">
                         </option>
                     </select>
                 </div>
@@ -26,6 +26,15 @@
                 </div>
             </form>
         </div>
+
+        <!-- Exportar Excel - Versión corregida -->
+        <div class="col-md-4 text-end">
+            <a th:href="@{/admin/almacen/exportar-excel-tipoProducto(idTipoProducto=${idTipoSeleccionado != null ? idTipoSeleccionado : 0})}"
+               class="btn btn-success custom-button">
+                <i class="fas fa-file-excel me-2"></i> Exportar Excel
+            </a>
+        </div>
+
     </div>
     <table th:if="${!lista.isEmpty()}" class="table table-striped table-hover table-sm custom-table">
     <thead class="table-dark table-bordered">

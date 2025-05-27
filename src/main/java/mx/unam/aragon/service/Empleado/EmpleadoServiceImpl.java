@@ -46,19 +46,18 @@ public class EmpleadoServiceImpl implements EmpleadoService, UserDetailsService 
         return empleadoRepository.findByUsername(username);
     }
 
+    //Debug
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        System.out.println("🛠 Buscando usuario: '" + username + "'");
+        System.out.println("Buscando usuario: '" + username + "'");
 
         EmpleadoEntity empleado = empleadoRepository.findByUsername(username)
                 .orElseThrow(() -> {
-                    System.err.println("❌ Usuario '" + username + "' no existe en la BD");
+                    System.err.println("Usuario '" + username + "' no existe en la BD");
                     return new UsernameNotFoundException("Usuario no encontrado");
                 });
 
-        System.out.println("🔑 Usuario encontrado: " + empleado.getUsername());
-        System.out.println("🔐 Contraseña almacenada: " + empleado.getPassword());
-        System.out.println("🎚️ Roles: " + empleado.getAuthorities());
+        System.out.println("Usuario encontrado: " + empleado.getUsername());
 
         return empleado;
     }

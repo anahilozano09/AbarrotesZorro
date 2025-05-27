@@ -40,15 +40,12 @@ public class SecurityConfig {
                         .loginProcessingUrl("/login")
                         .defaultSuccessUrl("/admin", true)  // Redirige aquí por defecto
                         .successHandler((request, response, authentication) -> {
-                            // Lógica personalizada para redirección por rol
                             if (authentication.getAuthorities().stream()
                                     .anyMatch(a -> a.getAuthority().equals("ROLE_Administrador"))) {
                                 response.sendRedirect("/admin");
                             } else if (authentication.getAuthorities().stream()
                                     .anyMatch(a -> a.getAuthority().equals("ROLE_Cajero"))) {
                                 response.sendRedirect("/cajero");
-                            } else {
-                                response.sendRedirect("/dashboard");
                             }
                         })
                         .failureUrl("/?error=true")

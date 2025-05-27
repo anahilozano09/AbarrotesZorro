@@ -23,14 +23,13 @@ public class InicioController {
             Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
             for (GrantedAuthority authority : authorities) {
                 if (authority.getAuthority().equals("ROLE_ADMIN")) {
-                    return "paginas/admin/inicio"; // Vista exclusiva del administrador
+                    return "paginas/admin/inicio";
                 } else if (authority.getAuthority().equals("ROLE_CAJERO")) {
-                    return "paginas/cajero/inicio"; // Vista exclusiva del cajero
+                    return "paginas/cajero/inicio";
                 }
             }
         }
 
-        // Por defecto si no hay rol o no está autenticado
         model.addAttribute("contenido", "Bienvenido a Abarrotes el Zorro");
         return "inicio";
     }
@@ -40,8 +39,5 @@ public class InicioController {
         return "denegado";
     }
 
-    @GetMapping("/dashboard")
-    public String dashboard() {
-        return "dashboard";
-    }
+
 }
