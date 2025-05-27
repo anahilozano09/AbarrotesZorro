@@ -38,7 +38,11 @@ public class AdministradorController {
     @GetMapping("almacen")
     public String almacen(Model model){
         List<CantidadProductoAlmacenEntity> lista = cantidadProductoAlmacenService.findAll();
+        List<TipoProductoEntity> listaTipoProducto = tipoProductoService.findAll();
+
         model.addAttribute("lista",lista);
+        model.addAttribute("listaTipoProducto",listaTipoProducto);
+        model.addAttribute("idTipoSeleccionado", 0);
         model.addAttribute("contenido","Productos en Almacen");
         return "admin/almacen/lista-almacen";
     }
