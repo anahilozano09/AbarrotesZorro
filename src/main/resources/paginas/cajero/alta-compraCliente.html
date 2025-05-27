@@ -36,22 +36,46 @@
         <label for="producto">Producto:</label>
         <select id="producto" name="producto.id" required>
             <option value="">-- Selecciona un producto --</option>
-            <option th:each="p : ${producto}"
-                    th:value="${p.id}"
-                    th:text="${p.nombre}">
-            </option>
         </select>
+
         <br/><br/>
 
-        <!-- Cantidad -->
-        <label for="cantidad">Cantidad:</label>
-        <input type="number" id="cantidad" th:field="*{cantidad}" required min="1"/>
-        <br/><br/>
+
 
         <!-- Botón de envío -->
         <button type="submit">Registrar Compra</button>
     </form>
 </main>
 <footer th:replace="~{plantillas/plantilla :: footer}"></footer>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const tipoProductoSelect = document.getElementById("tipoProducto");
+        const productoSelect = document.getElementById("producto");
+
+        tipoProductoSelect.addEventListener("change", function () {
+            const tipoProductoId = this.value;
+
+            // Limpiar productos actuales
+            productoSelect.innerHTML = '<option value="">-- Selecciona un producto --</option>';
+
+            if (tipoProductoId) {
+                fetch(`/api/productos?tipoProductoId=${tipoProductoId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        data.forEach(producto => {
+                            const option = document.createElement("option");
+                            option.value = producto.id;
+                            option.textContent = producto.nombre;
+                            productoSelect.appendChild(option);
+                        });
+                    })
+                    .catch(error => {
+                        console.error("Error al cargar productos:", error);
+                    });
+            }
+        });
+    });
+</script>
+
 </body>
 </html>

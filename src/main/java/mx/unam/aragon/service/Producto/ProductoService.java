@@ -10,5 +10,6 @@ public interface ProductoService {
     List<ProductoEntity> findAll();
     void deleteById(Long id);
     ProductoEntity findById(Long id);
+    List<ProductoEntity> findByTipoProductoId(Long tipoProductoId);
     ProductoEntity findByTipoProducto(TipoProductoEntity tipoProducto);
 }

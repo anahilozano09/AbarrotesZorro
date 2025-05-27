@@ -51,7 +51,7 @@ public class CajeroCompraClienteController {
 
     @PreAuthorize("hasAuthority('ROLE_Cajero')")
     @PostMapping("guardar-compra")
-    public String guardarCompra(@Valid @ModelAttribute(value = "compraCliente") CompraClienteEntity compraCliente,
+    public String guardarCompra(@Valid @ModelAttribute(value = "compra") CompraClienteEntity compraCliente,
                                 BindingResult result, Model model){
         if (result.hasErrors()) {
             for (ObjectError error : result.getAllErrors()) {

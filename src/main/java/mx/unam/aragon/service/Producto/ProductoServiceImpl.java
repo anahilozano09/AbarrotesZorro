@@ -29,6 +29,11 @@ public class ProductoServiceImpl implements ProductoService {
     }
 
     @Override
+    public List<ProductoEntity> findByTipoProductoId(Long tipoProductoId) {
+        return productoRepository.findByTipoProductoId(tipoProductoId);
+    }
+
+    @Override
     public ProductoEntity findById(Long id) {
         Optional<ProductoEntity> op = productoRepository.findById(id);
         return op.orElse(null);
