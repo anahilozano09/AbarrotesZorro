@@ -3,58 +3,80 @@
 <head th:replace="~{plantillas/plantilla :: head}"></head>
 <body>
 <header th:replace="~{plantillas/plantilla :: header}"></header>
-<main class="container shadow-lg p-3 mt-5 mb-5 bg-body-tertiary rounded">
+<main class="container custom-container shadow-lg p-3 mt-5 mb-5 bg-body-tertiary rounded">
     <h1 class="text-center">Registrar Compra de Cliente</h1>
-
-    <div class="flex-container">
+    <br>
+    <div class="row">
         <!-- 🧾 Formulario -->
-        <div class="form-container">
+        <div class="col-md-4 border-end">
             <form th:action="@{/alta-compraCliente/guardar-compra}" th:object="${compra}" method="post">
+
 
                 <!-- Búsqueda de Cliente -->
                 <div>
-                    <label for="numCuenta">Número de cuenta del cliente:</label>
-                    <input type="text" id="numCuenta" required/>
-                    <button type="button" id="buscarClienteBtn">Buscar</button>
+                    <label for="numCuenta" style="font-size: 1.5rem">Número de cuenta del cliente:</label>
+                    <br>
+                    <input type="text" style="width: 500px;height: 40px" id="numCuenta" required/>
+                    <button type="button" id="buscarClienteBtn" class="custom-button btn btn-success" style="font-size: 1.2rem">Buscar</button>
                 </div>
-                <br/>
+
 
                 <!-- Nombre del cliente -->
                 <div id="nombreClienteContainer" style="display:none;">
                     <strong>Cliente:</strong> <span id="nombreCliente"></span>
                     <input type="hidden" name="cliente.id" id="clienteId"/>
                 </div>
-                <br/>
-
+                <br>
                 <!-- Tipo de Producto -->
-                <label for="tipoProducto">Tipo de Producto:</label>
-                <select id="tipoProducto" name="tipoProducto.id">
+                <label for="tipoProducto" style="font-size: 1.5rem">Tipo de Producto:</label>
+                <br>
+                <select id="tipoProducto" name="tipoProducto.id" class="form-select mb-3">
                     <option value="">-- Selecciona un tipo de producto --</option>
                     <option th:each="t : ${tipoProducto}" th:value="${t.id}" th:text="${t.tipo}"></option>
                 </select>
-                <br/><br/>
 
                 <!-- Producto -->
-                <label for="producto">Producto:</label>
-                <select id="producto" name="producto.id" required>
+                <label for="producto" style="font-size: 1.5rem">Producto:</label>
+                <br>
+                <select id="producto" name="producto.id" class="form-select mb-3" required>
                     <option value="">-- Selecciona un producto --</option>
                 </select>
-
-                <br/><br/>
-
-                <!-- Enviar -->
-                <button type="submit">Registrar Compra</button>
+                <br>
+                <!-- Botón de añadir al carrito -->
+                <div class="d-flex justify-content-center">
+                    <button type="button" class="custom-button btn btn-primary" style="font-size: 1.2rem" id="btnAgregarCarrito">Añadir al carrito</button>
+                </div>
             </form>
         </div>
 
-        <!-- 📦 Detalle del Producto -->
-        <div class="detalle-container">
-            <h3>Detalle del Producto Seleccionado</h3>
-            <div class="detalle-info">
-                <p><strong>Nombre:</strong> <span id="productoNombre">N/A</span></p>
-                <p><strong>Precio:</strong> $<span id="productoPrecio">0.00</span></p>
+        <!-- 🛒 Carrito -->
+        <div class="col-md-8 d-flex flex-column justify-content-between" style="min-height: 400px;">
+            <div>
+                <h3>Carrito</h3>
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <th>Imagen</th>
+                        <th>Nombre</th>
+                        <th>Precio</th>
+                    </tr>
+                    </thead>
+                    <tbody id="carritoBody">
+                    <!-- Aquí se insertarán los productos -->
+                    </tbody>
+                </table>
+            </div>
+            <div class="mt-auto">
+                <p class="d-flex justify-content-end" style="font-size: 1.3rem"><strong>Total:</strong> $<span id="totalCarrito">0.00</span></p>
+                <div class="d-flex justify-content-center">
+                    <button type="submit" class="custom-button btn btn-success" style="font-size: 1.2rem">Finalizar Compra</button>
+                </div>
             </div>
         </div>
+    </div>
+    <!-- Mostrar imagen -->
+    <div class="d-flex justify-content-center mt-5">
+        <img th:src="@{'/external-images/zorro.gif'}" alt="Zorro animado" style="max-width: 300px; height: auto;">
     </div>
 </main>
 <footer th:replace="~{plantillas/plantilla :: footer}"></footer>
@@ -64,11 +86,13 @@
     document.addEventListener("DOMContentLoaded", function () {
         const tipoProductoSelect = document.getElementById("tipoProducto");
         const productoSelect = document.getElementById("producto");
+        const carritoBody = document.getElementById("carritoBody");
+        const totalCarrito = document.getElementById("totalCarrito");
+        let total = 0;
 
         tipoProductoSelect.addEventListener("change", function () {
             const tipoProductoId = this.value;
             productoSelect.innerHTML = '<option value="">-- Selecciona un producto --</option>';
-            resetDetalleProducto();
 
             if (tipoProductoId) {
                 fetch(`/api/productos?tipoProductoId=${tipoProductoId}`)
@@ -80,62 +104,53 @@
                             option.textContent = `${producto.nombre} - $${producto.precio.toFixed(2)}`;
                             option.dataset.nombre = producto.nombre;
                             option.dataset.precio = producto.precio;
+                            option.dataset.imagen = producto.imagen;
                             productoSelect.appendChild(option);
                         });
                     })
-                    .catch(error => {
-                        console.error("Error al cargar productos:", error);
-                    });
+                    .catch(error => console.error("Error al cargar productos:", error));
             }
         });
 
-        productoSelect.addEventListener("change", function () {
-            const selectedOption = this.options[this.selectedIndex];
-            if (selectedOption && selectedOption.value) {
-                document.getElementById("productoNombre").textContent = selectedOption.dataset.nombre || "N/A";
-                document.getElementById("productoPrecio").textContent = parseFloat(selectedOption.dataset.precio).toFixed(2) || "0.00";
+        document.getElementById("btnAgregarCarrito").addEventListener("click", function () {
+            const selectedOption = productoSelect.options[productoSelect.selectedIndex];
+            if (!selectedOption || !selectedOption.value) return;
+
+            const nombre = selectedOption.dataset.nombre || "N/A";
+            const precio = parseFloat(selectedOption.dataset.precio) || 0.00;
+            const imagen = selectedOption.dataset.imagen || null;
+
+            const row = document.createElement("tr");
+
+            const imgTd = document.createElement("td");
+            if (imagen) {
+                const img = document.createElement("img");
+                img.src = `/external-images/${imagen}`;
+                img.style.maxWidth = "80px";
+                img.style.maxHeight = "80px";
+                img.className = "img-thumbnail";
+                img.alt = "Imagen del producto";
+                imgTd.appendChild(img);
             } else {
-                resetDetalleProducto();
+                imgTd.textContent = "Sin imagen";
+                imgTd.className = "text-muted small";
             }
+
+            const nombreTd = document.createElement("td");
+            nombreTd.textContent = nombre;
+
+            const precioTd = document.createElement("td");
+            precioTd.textContent = `$${precio.toFixed(2)}`;
+
+            row.appendChild(imgTd);
+            row.appendChild(nombreTd);
+            row.appendChild(precioTd);
+
+            carritoBody.appendChild(row);
+
+            total += precio;
+            totalCarrito.textContent = total.toFixed(2);
         });
-
-        function resetDetalleProducto() {
-            document.getElementById("productoNombre").textContent = "N/A";
-            document.getElementById("productoPrecio").textContent = "0.00";
-        }
-    });
-</script>
-
-<!-- JS: Buscar cliente -->
-<script>
-    document.getElementById("buscarClienteBtn").addEventListener("click", function () {
-        const numCuenta = document.getElementById("numCuenta").value.trim();
-
-        if (!numCuenta) {
-            alert("Por favor, ingresa un número de cuenta.");
-            return;
-        }
-
-        fetch(`/api/clientes/buscar?numCuenta=${encodeURIComponent(numCuenta)}`)
-            .then(response => {
-                if (!response.ok) throw new Error("Cliente no encontrado");
-                return response.json();
-            })
-            .then(data => {
-                document.getElementById("nombreCliente").textContent = data.nombre;
-                document.getElementById("clienteId").value = data.id;
-                document.getElementById("nombreClienteContainer").style.display = "block";
-                document.getElementById("tipoProducto").disabled = false;
-                document.getElementById("producto").disabled = false;
-            })
-            .catch(error => {
-                alert("Cliente no encontrado. Verifica el número de cuenta.");
-                document.getElementById("nombreClienteContainer").style.display = "none";
-                document.getElementById("clienteId").value = "";
-                document.getElementById("tipoProducto").disabled = true;
-                document.getElementById("producto").disabled = true;
-                resetDetalleProducto();
-            });
     });
 </script>
 

@@ -138,7 +138,36 @@ body.home-page form button:hover {
     vertical-align: middle !important;
     text-align: center;
 }
+.flex-container {
+    display: flex;
+    gap: 2rem;
+    align-items: flex-start;
+}
 
+.form-container {
+    flex: 1;
+    min-width: 300px;
+}
+
+.carrito-container {
+    flex: 1;
+    max-height: 600px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+}
+
+.sticky-footer {
+    position: sticky;
+    bottom: 0;
+    background: white;
+    z-index: 10;
+}
+.custom-container {
+    max-width: 2000px;
+    width: 100%;
+}
 
 
 
