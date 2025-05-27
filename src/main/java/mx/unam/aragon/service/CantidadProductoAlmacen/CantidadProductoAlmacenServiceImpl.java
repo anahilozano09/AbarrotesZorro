@@ -35,4 +35,9 @@ public class CantidadProductoAlmacenServiceImpl implements CantidadProductoAlmac
         return op.orElse(null);
 
     }
+
+    @Override
+    public List<CantidadProductoAlmacenEntity> findByTipoProducto(Long idTipoProducto) {
+        return cantidadProductoAlmacenRepository.findByTipoProducto(idTipoProducto);
+    }
 }
