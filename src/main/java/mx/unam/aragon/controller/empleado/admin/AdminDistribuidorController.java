@@ -60,7 +60,7 @@ public class AdminDistribuidorController {
         } else {
             model.addAttribute("listaProducto",Collections.emptyList());
         }
-
+        model.addAttribute("contenido", "Pedido al proveedor");
         return "admin/pedido/alta-pedido";
     }
 
@@ -91,18 +91,20 @@ public class AdminDistribuidorController {
             redirectAttributes.addFlashAttribute("error", "La cantidad debe ser mayor a 0");
             return "redirect:/admin/pedido/alta-pedido";
         }
+        else {
+            ProductoEntity producto = productoService.findById(idProducto);
+            PedidoProveedorEntity pedido = PedidoProveedorEntity.builder()
+                    .cantidad(cantidad)
+                    .producto(producto)
+                    .build();
 
-        ProductoEntity producto = productoService.findById(idProducto);
-        PedidoProveedorEntity pedido = PedidoProveedorEntity.builder()
-                .cantidad(cantidad)
-                .producto(producto)
-                .build();
+            pedidoProveedorService.save(pedido);
 
-        pedidoProveedorService.save(pedido);
+            redirectAttributes.addFlashAttribute("mensaje", "Pedido solicitado correctamente");
 
-        redirectAttributes.addFlashAttribute("mensaje", "Pedido solicitado correctamente");
+            return "redirect:/admin/pedido/enviar-correo?idPedido=" + pedido.getId();
+        }
 
-        return "redirect:/admin/pedido/enviar-correo?idPedido=" + pedido.getId();
     }
 
     @PreAuthorize("hasAuthority('ROLE_Administrador')")
@@ -112,58 +114,64 @@ public class AdminDistribuidorController {
         ProductoEntity producto = pedido.getProducto();
         ProveedorEntity proveedor = producto.getProveedor();
 
-        String gmail = "distribuidorpruebaspring@gmail.com";
-        String pswd = "xtgp kpqg yqar tlys";
-        Properties p = System.getProperties();
-        p.setProperty("mail.smtps.host", "smpt.gmail.com");
-        p.setProperty("mail.smtps.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
-        p.setProperty("mail.smtps.socketFactory.fallback", "false");
-        p.setProperty("mail.smtp.port", "465");
-        p.setProperty("mail.smtp.socketFactory.port", "465");
-        p.setProperty("mail.smtps.auth", "true");
-        p.setProperty("mail.smtp.ssl.trust", "smtp.gmail.com");
-        p.setProperty("mail.smtps.ssl.trust", "smtp.gmail.com");
-        p.setProperty("mail.smtp.ssl.quitwait", "false");
-
-        //construccion del mensaje
-        String cadena= "Pedido al distribuidor " + proveedor.getNombre();
-        cadena += "<h3>Producto: <p>" + producto.getNombre() + "</p></h3><br>" +
-                "<h3>Precio Unitario: <p>" +"$"+ producto.getPrecio() + "</p></h3><br>" +
-                "<h3>Cantidad Solicitada: <p>" + pedido.getCantidad() + "</p></h3><br>";
-
-        try {
-            Session session = Session.getInstance(p, null);
-            MimeMessage message = new MimeMessage(session);
-
-            MimeBodyPart texto = new MimeBodyPart();
-            texto.setContent(cadena, "text/html;charset=utf-8");
-
-            //adjuntar la imagen
-            BodyPart adjunto = new MimeBodyPart();
-            String r = archivoRuta +"/"+ producto.getImagen();
-            adjunto.setDataHandler(new DataHandler(new FileDataSource(r)));
-            adjunto.setFileName("producto.png");
-            Multipart multiple = new MimeMultipart();
-            multiple.addBodyPart(texto);
-            multiple.addBodyPart(adjunto);
-
-            message.setRecipients(Message.RecipientType.TO,
-                    InternetAddress.parse(proveedor.getEmail(), false));
-            message.setSubject("Pedido del producto: " + producto.getNombre());
-            message.setContent(multiple);
-            message.setSentDate(new Date());
-
-
-            Transport transport = (Transport) session.getTransport("smtps");
-            transport.connect("smtp.gmail.com", gmail, pswd);
-            transport.sendMessage(message, message.getAllRecipients());
-            transport.close();
-
-        } catch (Exception e) {
-            e.printStackTrace();
+        if(pedido.getCantidad()<=0){
+            model.addFlashAttribute("errorCorreo", "El pedido debe de ser mayor a 0");
+            return "redirect:/admin/pedido/alta-pedido";
         }
-        model.addFlashAttribute("contenido", "El correo se mando con éxito");
-        return "redirect:/admin/pedido/alta-pedido";
+        else {
+            String gmail = "distribuidorpruebaspring@gmail.com";
+            String pswd = "xtgp kpqg yqar tlys";
+            Properties p = System.getProperties();
+            p.setProperty("mail.smtps.host", "smpt.gmail.com");
+            p.setProperty("mail.smtps.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+            p.setProperty("mail.smtps.socketFactory.fallback", "false");
+            p.setProperty("mail.smtp.port", "465");
+            p.setProperty("mail.smtp.socketFactory.port", "465");
+            p.setProperty("mail.smtps.auth", "true");
+            p.setProperty("mail.smtp.ssl.trust", "smtp.gmail.com");
+            p.setProperty("mail.smtps.ssl.trust", "smtp.gmail.com");
+            p.setProperty("mail.smtp.ssl.quitwait", "false");
+
+            //construccion del mensaje
+            String cadena= "Pedido al distribuidor " + proveedor.getNombre();
+            cadena += "<h3>Producto: <p>" + producto.getNombre() + "</p></h3><br>" +
+                    "<h3>Precio Unitario: <p>" +"$"+ producto.getPrecio() + "</p></h3><br>" +
+                    "<h3>Cantidad Solicitada: <p>" + pedido.getCantidad() + "</p></h3><br>";
+
+            try {
+                Session session = Session.getInstance(p, null);
+                MimeMessage message = new MimeMessage(session);
+
+                MimeBodyPart texto = new MimeBodyPart();
+                texto.setContent(cadena, "text/html;charset=utf-8");
+
+                //adjuntar la imagen
+                BodyPart adjunto = new MimeBodyPart();
+                String r = archivoRuta +"/"+ producto.getImagen();
+                adjunto.setDataHandler(new DataHandler(new FileDataSource(r)));
+                adjunto.setFileName("producto.png");
+                Multipart multiple = new MimeMultipart();
+                multiple.addBodyPart(texto);
+                multiple.addBodyPart(adjunto);
+
+                message.setRecipients(Message.RecipientType.TO,
+                        InternetAddress.parse(proveedor.getEmail(), false));
+                message.setSubject("Pedido del producto: " + producto.getNombre());
+                message.setContent(multiple);
+                message.setSentDate(new Date());
+
+
+                Transport transport = (Transport) session.getTransport("smtps");
+                transport.connect("smtp.gmail.com", gmail, pswd);
+                transport.sendMessage(message, message.getAllRecipients());
+                transport.close();
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            model.addFlashAttribute("contenido", "El correo se mando con éxito");
+            return "redirect:/admin/pedido/alta-pedido";
+        }
 
     }
 

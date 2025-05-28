@@ -9,9 +9,11 @@
 <header th:replace="~{plantillas/plantilla :: header}"></header>
 
 <main class="container custom-container shadow-lg p-3 mt-5 mb-5 bg-body-tertiary rounded">
-    <h1 class="mb-4" th:text="${contenido}">Pedido a Proveedor</h1>
+    <h1 class="mb-4" th:text="${contenido}"></h1>
 
     <div th:if="${mensaje}" class="alert alert-success" th:text="${mensaje}"></div>
+    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+    <div th:if="${errorCorreo}" class="alert alert-danger" th:text="${errorCorreo}"></div>
 
     <div class="row">
         <div class="col-md-4 border-end">
@@ -33,7 +35,7 @@
                 <!-- Producto -->
                 <div class="mb-3">
                     <label class="form-label">Producto:</label>
-                    <select class="form-select" id="productoSelect" >
+                    <select class="form-select" id="productoSelect" required>
                         <option value="0">Seleccione un producto</option>
                         <option th:each="producto : ${listaProducto}"
                                 th:value="${producto.id}"
@@ -47,7 +49,6 @@
                     <label for="cantidad" class="form-label">Cantidad:</label>
                     <input type="number" id="cantidad" class="form-control" min="1" value="1" required>
                 </div>
-
             </form>
         </div>
 
@@ -69,7 +70,7 @@
                         <td th:text="${item.producto?.proveedor?.telefono}"></td>
                     </tr>
                     <tr th:if="${#lists.isEmpty(lista)}">
-                        <td colspan="3" class="text-center"></td>
+                        <td colspan="3" class="text-center">Seleccione un producto</td>
                     </tr>
                     </tbody>
                 </table>
@@ -79,8 +80,7 @@
                     <form th:action="@{/admin/pedido/guardar-pedido}" method="post" id="formFinalizar">
                         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
                         <input type="hidden" id="inputProducto" name="idProducto" required>
-                        <input type="hidden" id="inputCantidad" name="cantidad" required
-                               th:value="${#numbers.sequence(1, 1)}"> <!-- Valor por defecto -->
+                        <input type="hidden" id="inputCantidad" name="cantidad" required>
                         <button type="submit" class="btn btn-success">Finalizar Pedido</button>
                     </form>
                 </div>
@@ -92,76 +92,76 @@
 <footer th:replace="~{plantillas/plantilla :: footer}"></footer>
 
 <script>
-    // Función principal de inicialización
+    $(document).ready(function () {
+        const mensajeExito = $('.alert-success').text().trim();
+        if (mensajeExito !== "") {
+            $('#cantidad').val(1);
+            $('#inputCantidad').val(1);
+            $('#tipoProductoSelect').val("0");
+            $('#productoSelect').val("0").prop('disabled', true);
+            $('#inputProducto').val('');
+            $('#proveedorInfo').html('<tr><td colspan="3">Seleccione un producto</td></tr>');
+        }
+
+        initPedidos();
+    });
+
     function initPedidos() {
         if (window.jQuery) {
             setupPedidos();
         } else {
             document.getElementById('proveedorInfo').innerHTML = `
-            <tr>
-                <td colspan="3" class="text-danger">
-                    Error: Recarga la página. Si persiste, contacta al administrador.
-                </td>
-            </tr>`;
+                <tr>
+                    <td colspan="3" class="text-danger">
+                        Error: Recarga la página. Si persiste, contacta al administrador.
+                    </td>
+                </tr>`;
         }
     }
 
-    // Configuración de los event listeners
     function setupPedidos() {
-        $(document).ready(function() {
-            // Estado inicial
-            $('#productoSelect').prop('disabled', true);
-            $('#inputCantidad').val(1);
+        $('#productoSelect').prop('disabled', true);
+        $('#inputCantidad').val(1);
 
+        $('#tipoProductoSelect').change(function() {
+            const tipoId = $(this).val();
+            if (tipoId && tipoId !== "0") {
+                loadProductos(tipoId);
+            } else {
+                resetProductos();
+            }
+        });
 
-            // Handler para cambio de tipo de producto
-            $('#tipoProductoSelect').change(function() {
-                const tipoId = $(this).val();
-                if (tipoId && tipoId !== "0") {
-                    loadProductos(tipoId);
-                } else {
-                    resetProductos();
-                }
-            });
+        $('#productoSelect').change(function() {
+            const productoId = $(this).val();
+            if (productoId && productoId !== "0") {
+                loadProveedor(productoId);
+                $('#inputProducto').val(productoId);
+            }
+        });
 
-            // Handler para cambio de producto
-            $('#productoSelect').change(function() {
-                const productoId = $(this).val();
-                if (productoId && productoId !== "0") {
-                    loadProveedor(productoId);
-                    $('#inputProducto').val(productoId);
-                }
-            });
+        $('#cantidad').on('input change', function() {
+            const cantidad = $(this).val();
+            $('#inputCantidad').val(cantidad);
+        });
 
-            // Handler para cambio de cantidad
-            $('#cantidad').change(function() {
-                const cantidad = $(this).val();
-                if(cantidad > 0) {
-                    $('#inputCantidad').val(cantidad);
-                }
-            });
+        $('#formFinalizar').submit(function(e) {
+            if (!$('#inputProducto').val() || $('#inputProducto').val() === "0") {
+                e.preventDefault();
+                alert('Por favor seleccione un producto');
+                return false;
+            }
 
-            // Validación del formulario
-            $('#formFinalizar').submit(function(e) {
-                if(!$('#inputProducto').val() || $('#inputProducto').val() === "0") {
-                    e.preventDefault();
-                    alert('Por favor seleccione un producto');
-                    return false;
-                }
+            if (!$('#inputCantidad').val() || $('#inputCantidad').val() < 1) {
+                e.preventDefault();
+                alert('La cantidad debe ser al menos 1');
+                return false;
+            }
 
-                if(!$('#inputCantidad').val() || $('#inputCantidad').val() < 1) {
-                    e.preventDefault();
-                    alert('La cantidad debe ser al menos 1');
-                    return false;
-                }
-
-                return true;
-            });
-
+            return true;
         });
     }
 
-    // Carga los productos según el tipo seleccionado
     function loadProductos(tipoId) {
         $.ajax({
             url: '/admin/pedido/productos-por-tipo',
@@ -177,7 +177,6 @@
         });
     }
 
-    // Actualiza el select de productos
     function updateProductSelect(productos) {
         const $select = $('#productoSelect');
         $select.empty().append('<option value="0">Seleccione un producto</option>');
@@ -192,7 +191,6 @@
         }
     }
 
-    // Resetea el select de productos
     function resetProductos() {
         $('#productoSelect').empty()
             .append('<option value="0">Seleccione un producto</option>')
@@ -200,17 +198,16 @@
         $('#proveedorInfo').html('<tr><td colspan="3">Seleccione un producto</td></tr>');
     }
 
-    // Carga la información del proveedor
     function loadProveedor(productoId) {
         $.get('/admin/pedido/provedoor-por-producto', { idProducto: productoId }, function(proveedor) {
             if (proveedor) {
                 $('#proveedorInfo').html(`
-                <tr>
-                    <td>${proveedor.nombre}</td>
-                    <td>${proveedor.email}</td>
-                    <td>${proveedor.telefono}</td>
-                </tr>
-            `);
+                    <tr>
+                        <td>${proveedor.nombre}</td>
+                        <td>${proveedor.email}</td>
+                        <td>${proveedor.telefono}</td>
+                    </tr>
+                `);
             } else {
                 $('#proveedorInfo').html('<tr><td colspan="3">Proveedor no disponible</td></tr>');
             }
@@ -218,8 +215,6 @@
             $('#proveedorInfo').html('<tr><td colspan="3">Error al cargar proveedor</td></tr>');
         });
     }
-
-    initPedidos();
 </script>
 
 </body>
