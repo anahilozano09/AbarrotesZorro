@@ -1,221 +1,95 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
-<head th:replace="~{plantillas/plantilla :: head}"></head>
+<head th:replace="~{plantillas/plantilla :: head}">
+    <script th:src="@{/js/compraCliente.js}" defer></script>
+</head>
 <body>
 <header th:replace="~{plantillas/plantilla :: header}"></header>
 
 <main class="container custom-container shadow-lg p-3 mt-5 mb-5 bg-body-tertiary rounded">
     <h1 class="text-center">Registrar Compra de Cliente</h1>
     <br>
-    <div class="row">
-        <!-- 🧾 Formulario -->
-        <div class="col-md-4 border-end">
-            <form th:action="@{/alta-compraCliente/guardar-compra}" th:object="${compra}" method="post">
 
-                <!-- Búsqueda de Cliente -->
-                <div>
-                    <label for="valorBusqueda" style="font-size: 1.5rem">Cuenta / Email / Teléfono del cliente:</label>
-                    <br>
-                    <input type="text" style="width: 80%; height: 35px" id="valorBusqueda" required/>
-                    <button type="button" id="buscarClienteBtn" class="custom-button btn btn-success mt-2" style="font-size: 1.2rem">Buscar</button>
-                    <div class="d-flex justify-content-center">
-                        <a th:href="@{/cajero/alta-cliente}" class="btn btn-primary custom-button" style="width: 10rem; height: 2.7rem; font-size: 1.2rem;">Alta de cliente</a>
-                    </div>
+    <form th:action="@{/alta-compraCliente/guardar-compra}" method="post" id="formCompra">
+        <div class="row">
+            <!-- Lado izquierdo: búsqueda de cliente y productos -->
+            <div class="col-md-4 border-end">
+                <label for="valorBusqueda" style="font-size: 1.5rem">Cuenta / Email / Teléfono del cliente:</label><br>
+                <input type="text" style="width: 80%; height: 35px" id="valorBusqueda" name="valorBusqueda" required/>
+                <button type="button" id="buscarClienteBtn" class="btn btn-success mt-2" style="font-size: 1.2rem">Buscar</button>
+                <div class="d-flex justify-content-center mt-2">
+                    <a th:href="@{/cajero/alta-cliente}" class="btn btn-primary" style="width: 10rem; font-size: 1.2rem;">Alta de cliente</a>
                 </div>
 
-
-                <!-- Nombre del cliente -->
                 <div id="nombreClienteContainer" class="mt-3" style="display:none;">
                     <strong>Cliente:</strong> <span id="nombreCliente"></span>
-                    <input type="hidden" name="cliente.id" id="clienteId"/>
+                    <input type="hidden" name="clienteId" id="clienteId"/>
                 </div>
 
                 <br>
-
-                <!-- Tipo de Producto -->
                 <label for="tipoProducto" style="font-size: 1.5rem">Tipo de Producto:</label>
-                <select id="tipoProducto" name="tipoProducto.id" class="form-select mb-3" disabled>
+                <select id="tipoProducto" name="tipoProductoId" class="form-select mb-3" disabled>
                     <option value="">-- Selecciona un tipo de producto --</option>
                     <option th:each="t : ${tipoProducto}" th:value="${t.id}" th:text="${t.tipo}"></option>
                 </select>
 
-                <!-- Producto -->
                 <label for="producto" style="font-size: 1.5rem">Producto:</label>
-                <select id="producto" name="producto.id" class="form-select mb-3" required disabled>
+                <select id="producto" name="productoId" class="form-select mb-3" required disabled>
                     <option value="">-- Selecciona un producto --</option>
                 </select>
 
-                <!-- Cantidad -->
                 <div class="d-flex flex-column align-items-center mb-3">
                     <label for="cantidad" style="font-size: 1.5rem">Cantidad:</label>
                     <input type="number" id="cantidad" class="form-control text-center" min="1" value="1"
                            style="max-width: 100px;" required disabled/>
                 </div>
 
-
-                <!-- Botón de añadir al carrito -->
-                <div class="d-flex justify-content-center mt-5 mb-5">
-                    <button type="button" class="custom-button btn btn-primary" style="font-size: 1.2rem" id="btnAgregarCarrito">Añadir al carrito</button>
+                <div class="d-flex justify-content-center mt-4 mb-3">
+                    <button type="button" class="btn btn-primary" id="btnAgregarCarrito" disabled>Añadir al carrito</button>
                 </div>
+
                 <div class="d-flex justify-content-center">
-                    <button type="submit" class="custom-button btn btn-success" style="font-size: 1.2rem">Finalizar Compra</button>
+                    <button type="submit" class="btn btn-success" id="btnFinalizarCompra" disabled>Finalizar Compra</button>
                 </div>
-            </form>
-        </div>
+            </div>
 
-        <!-- 🛒 Carrito -->
-        <div class="col-md-8 d-flex flex-column justify-content-between" style="min-height: 400px;">
-            <div>
-                <h3>Carrito</h3>
-                <table class="table table-bordered">
-                    <thead>
-                    <tr>
-                        <th>Imagen</th>
-                        <th>Nombre</th>
-                        <th>Cantidad</th>
-                        <th>Precio</th>
-                    </tr>
-                    </thead>
-                    <tbody id="carritoBody">
-                    <!-- Aquí se insertarán los productos -->
-                    </tbody>
-                </table>
+            <!-- Lado derecho: carrito -->
+            <div class="col-md-8 d-flex flex-column justify-content-between" style="min-height: 400px;">
+                <div>
+                    <h3>Carrito</h3>
+                    <table class="table table-bordered">
+                        <thead>
+                        <tr>
+                            <th>Imagen</th>
+                            <th>Nombre</th>
+                            <th>Cantidad</th>
+                            <th>Precio Unitario</th>
+                            <th>Subtotal</th>
+                            <th>Acción</th>
+                        </tr>
+                        </thead>
+                        <tbody id="carritoBody">
+                        <!-- Productos agregados -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="mt-auto">
+                    <p class="d-flex justify-content-end" style="font-size: 1.3rem">
+                        <strong>Total:</strong> $<span id="totalCarrito">0.00</span>
+                    </p>
+                </div>
             </div>
         </div>
-        <div class="mt-auto">
-            <p class="d-flex justify-content-end" style="font-size: 1.3rem"><strong>Total:</strong> $<span id="totalCarrito">0.00</span></p>
-        </div>
-    </div>
 
-    <!-- Mostrar imagen decorativa -->
+        <!-- Inputs ocultos para enviar productos -->
+        <div id="inputsCarrito"></div>
+    </form>
+
     <div class="d-flex justify-content-center mt-5">
-        <img th:src="@{'/external-images/zorro.gif'}" alt="Zorro animado" style="max-width: 300px; height: auto;">
+        <img th:src="@{'/external-images/zorro.gif'}" alt="Zorro animado" style="max-width: 300px;">
     </div>
-
 </main>
 
 <footer th:replace="~{plantillas/plantilla :: footer}"></footer>
-
-<!-- Scripts -->
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const tipoProductoSelect = document.getElementById("tipoProducto");
-        const productoSelect = document.getElementById("producto");
-        const carritoBody = document.getElementById("carritoBody");
-        const totalCarrito = document.getElementById("totalCarrito");
-        let total = 0;
-
-        tipoProductoSelect.addEventListener("change", function () {
-            const tipoProductoId = this.value;
-            productoSelect.innerHTML = '<option value="">-- Selecciona un producto --</option>';
-
-            if (tipoProductoId) {
-                fetch(`/api/productos?tipoProductoId=${tipoProductoId}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        data.forEach(producto => {
-                            const option = document.createElement("option");
-                            option.value = producto.id;
-                            option.textContent = `${producto.nombre} - $${producto.precio.toFixed(2)}`;
-                            option.dataset.nombre = producto.nombre;
-                            option.dataset.precio = producto.precio;
-                            option.dataset.imagen = producto.imagen;
-                            productoSelect.appendChild(option);
-                        });
-                    })
-                    .catch(error => console.error("Error al cargar productos:", error));
-            }
-        });
-
-        document.getElementById("btnAgregarCarrito").addEventListener("click", function () {
-            const selectedOption = productoSelect.options[productoSelect.selectedIndex];
-            if (!selectedOption || !selectedOption.value) return;
-
-            const nombre = selectedOption.dataset.nombre || "N/A";
-            const precio = parseFloat(selectedOption.dataset.precio) || 0.00;
-            const imagen = selectedOption.dataset.imagen || null;
-
-            const row = document.createElement("tr");
-
-            const imgTd = document.createElement("td");
-            if (imagen) {
-                const img = document.createElement("img");
-                img.src = `/external-images/${imagen}`;
-                img.style.maxWidth = "80px";
-                img.style.maxHeight = "80px";
-                img.className = "img-thumbnail";
-                img.alt = "Imagen del producto";
-                imgTd.appendChild(img);
-            } else {
-                imgTd.textContent = "Sin imagen";
-                imgTd.className = "text-muted small";
-            }
-
-            const nombreTd = document.createElement("td");
-            nombreTd.textContent = nombre;
-
-            const cantidadInput = document.getElementById("cantidad");
-            const cantidad = parseInt(cantidadInput.value) || 1;
-
-            const cantidadTd = document.createElement("td");
-            cantidadTd.textContent = cantidad;
-            const precioTotal = precio * cantidad;
-            const precioTd = document.createElement("td");
-            precioTd.textContent = `$${precioTotal.toFixed(2)}`;
-
-            row.appendChild(imgTd);
-            row.appendChild(nombreTd);
-            row.appendChild(cantidadTd);
-            row.appendChild(precioTd);
-
-            total += precioTotal;
-            totalCarrito.textContent = total.toFixed(2);
-
-
-            carritoBody.appendChild(row);
-        });
-
-        // ✅ Buscar cliente por cuenta, email o teléfono
-        document.getElementById("buscarClienteBtn").addEventListener("click", function () {
-            const valor = document.getElementById("valorBusqueda").value.trim();
-
-            if (!valor) {
-                alert("Por favor, ingresa un número de cuenta, email o teléfono.");
-                return;
-            }
-
-            fetch(`/alta-compraCliente/api/clientes/buscar?valor=${encodeURIComponent(valor)}`)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error("Cliente no encontrado");
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    document.getElementById("nombreCliente").textContent = data.nombre;
-                    document.getElementById("clienteId").value = data.id;
-                    document.getElementById("nombreClienteContainer").style.display = "block";
-
-                    // ✅ Habilitar los selects cuando el cliente es válido
-                    tipoProductoSelect.disabled = false;
-                    productoSelect.disabled = false;
-                    document.getElementById("cantidad").disabled = false;
-                })
-                .catch(error => {
-                    alert("No se encontró un cliente con ese número de cuenta, email o teléfono.");
-                    document.getElementById("nombreClienteContainer").style.display = "none";
-                    document.getElementById("clienteId").value = "";
-
-                    // 🚫 Deshabilitar los selects cuando el cliente no existe
-                    tipoProductoSelect.disabled = true;
-                    productoSelect.disabled = true;
-
-                    console.error(error);
-                });
-        });
-    });
-</script>
-
-
 </body>
 </html>

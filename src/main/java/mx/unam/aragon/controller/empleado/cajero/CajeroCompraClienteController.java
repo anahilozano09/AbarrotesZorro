@@ -9,8 +9,11 @@ import jakarta.mail.internet.MimeMessage;
 import jakarta.mail.internet.MimeMultipart;
 import jakarta.validation.Valid;
 import mx.unam.aragon.model.entity.*;
+import mx.unam.aragon.service.CantidadProductoAlmacen.CantidadProductoAlmacenService;
 import mx.unam.aragon.service.Cliente.ClienteService;
 import mx.unam.aragon.service.CompraCliente.CompraClienteService;
+import mx.unam.aragon.service.Empleado.EmpleadoService;
+import mx.unam.aragon.service.HistoricoProductos.HistoricoProductosService;
 import mx.unam.aragon.service.PedidoProveedor.PedidoProveedorService;
 import mx.unam.aragon.service.Producto.ProductoService;
 import mx.unam.aragon.service.TipoProducto.TipoProductoService;
@@ -26,83 +29,106 @@ import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.security.Principal;
+import java.time.LocalDate;
 import java.util.*;
 
 @Controller
-@RequestMapping("/admin/pedido")
+@RequestMapping("/cajero/compra-cliente")
 public class CajeroCompraClienteController {
+
     @Autowired
-    CompraClienteService compraClienteService;
+    ClienteService clienteService;
     @Autowired
     TipoProductoService tipoProductoService;
     @Autowired
     ProductoService productoService;
+    @Autowired
+    CompraClienteService compraClienteService;
+    @Autowired
+    EmpleadoService empleadoService;
+    @Autowired
+    HistoricoProductosService historicoProductosService;
+    @Autowired
+    CantidadProductoAlmacenService cantidadProductoAlmacenService;
+
+
 
     @Value("${external.image.dir}")
     private String archivoRuta;
 
-    @PreAuthorize("hasAuthority('ROLE_Administrador')")
-    @GetMapping("alta-compra")
-    public String altaCompra(Model model, @RequestParam(required = false) Long tipo){
-        model.addAttribute("listaTipoProducto",tipoProductoService.findAll());
-
-        if(tipo != null){
-            model.addAttribute("listaProducto",productoService.findByTipoProductoId(tipo));
-            model.addAttribute("idTipoProductoSeleccionado",tipo);
-        } else {
-            model.addAttribute("listaProducto", Collections.emptyList());
-        }
-        model.addAttribute("contenido", "Pedido al proveedor");
-        return "admin/pedido/alta-pedido";
+    @PreAuthorize("hasAuthority('ROLE_Cajero')")
+    @GetMapping
+    public String altaCompra(Model model){
+        model.addAttribute("tipoProducto",tipoProductoService.findAll());
+        model.addAttribute("productos", productoService.findAll());
+        return "cajero/alta-compraCliente";
     }
 
-    @PreAuthorize("hasAuthority('ROLE_Administrador')")
-    @GetMapping("productos-por-tipo")
-    @ResponseBody
-    public List<ProductoEntity> getProductosByTipoProducto(@RequestParam Long idTipoProducto) {
-        System.out.println(">>> SOLICITUD RECIBIDA - Tipo ID: " + idTipoProducto);
-        List<ProductoEntity> productos = productoService.findByTipoProductoId(idTipoProducto);
-        System.out.println(">>> PRODUCTOS ENCONTRADOS: " + productos.size());
-        return productos;
-    }
-
-    @PreAuthorize("hasAuthority('ROLE_Administrador')")
-    @GetMapping("provedoor-por-producto")
-    @ResponseBody
-    public ProveedorEntity getProveedorByProducto(@RequestParam Long idProducto) {
-        return productoService.findById(idProducto).getProveedor();
-    }
-
-    @PreAuthorize("hasAuthority('ROLE_Administrador')")
-    @PostMapping("guardar-pedido")
-    public String guardarPedido(@RequestParam Long idProducto,
+    @PreAuthorize("hasAuthority('ROLE_Cajero')")
+    @PostMapping("guardar-compra")
+    public String guardarCompra(@RequestParam String valorBusqueda,
+                                @RequestParam Long productoId,
                                 @RequestParam Integer cantidad,
-                                RedirectAttributes redirectAttributes){
+                                Model model, Principal principal){
+        Optional<ClienteEntity> clienteOpt = clienteService.findByNumCuenta(valorBusqueda);
+        if (!clienteOpt.isPresent()) clienteOpt = clienteService.findByEmail(valorBusqueda);
+        if (!clienteOpt.isPresent()) clienteOpt = clienteService.findByTelefono(valorBusqueda);
 
-        if(cantidad == null || cantidad < 1) {
-            redirectAttributes.addFlashAttribute("error", "La cantidad debe ser mayor a 0");
-            return "redirect:/admin/pedido/alta-pedido";
+        if (clienteOpt.isEmpty()){
+            model.addAttribute("error", "Cliente no encontrado con el dato ingresado.");
+            model.addAttribute("tipoProductos", tipoProductoService.findAll());
+            model.addAttribute("productos", productoService.findAll());
+            return "cajero/alta-compraCliente";
         }
-        else {
-            ProductoEntity producto = productoService.findById(idProducto);
-            PedidoProveedorEntity pedido = PedidoProveedorEntity.builder()
-                    .cantidad(cantidad)
+
+        try{
+            ClienteEntity cliente = clienteOpt.get();
+
+            Optional<EmpleadoEntity> empleado = Optional.ofNullable(empleadoService.findByUsername(principal.getName())
+                    .orElseThrow(() -> new IllegalArgumentException("Empleado no encontrado")));
+
+            ProductoEntity producto = productoService.findById(productoId);
+            ProductoCompradoEntity productoComprado = ProductoCompradoEntity.builder()
                     .producto(producto)
+                    .cantidad(cantidad)
                     .build();
 
-            redirectAttributes.addFlashAttribute("mensaje", "Pedido solicitado correctamente");
+            CantidadProductoAlmacenEntity cantidadProductoAlmacen = cantidadProductoAlmacenService.findByProductoId(productoId);
 
-            return "redirect:/admin/pedido/enviar-correo?idPedido=" + pedido.getId();
+            int cantidadActual = cantidadProductoAlmacen.getCantidad();
+            if (cantidadActual < cantidad) {
+                throw new IllegalArgumentException("No hay suficiente stock");
+            }
+
+            CompraClienteEntity compraCliente = CompraClienteEntity.builder()
+                    .cliente(cliente)
+                    .empleado(empleado.get())
+                    .productoComprado(productoComprado)
+                    .fecha(LocalDate.now())
+                    .total(producto.getPrecio()*cantidad)
+                    .build();
+
+            HistoricoProductosEntity historicoProducto = HistoricoProductosEntity.builder()
+                    .compraCliente(compraCliente)
+                    .cantidadProductoAlmacen(cantidadProductoAlmacen)
+                    .cantidadAct(cantidadProductoAlmacen.getCantidad()-cantidad)
+                    .build();
+
+            compraClienteService.save(compraCliente);
+            historicoProductosService.save(historicoProducto);
+
+            model.addAttribute("contenido", "Registro de Compra exitoso");
+
+        } catch (Exception e){
+            model.addAttribute("error","Registro de Compra fallido");
+
         }
 
-    }
-
-    @PreAuthorize("hasAuthority('ROLE_Administrador')")
-    @GetMapping("enviar-correo")
-    public String correoDistribuidor(RedirectAttributes model, @RequestParam Long idPedido) {
-        return "";
+        model.addAttribute("tipoProductos", tipoProductoService.findAll());
+        model.addAttribute("productos", productoService.findAll());
+        return "cajero/alta-compraCliente";
 
     }
-
 
 }

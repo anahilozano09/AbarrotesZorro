@@ -40,4 +40,9 @@ public class CantidadProductoAlmacenServiceImpl implements CantidadProductoAlmac
     public List<CantidadProductoAlmacenEntity> findByTipoProducto(Long idTipoProducto) {
         return cantidadProductoAlmacenRepository.findByTipoProducto(idTipoProducto);
     }
+
+    @Override
+    public CantidadProductoAlmacenEntity findByProductoId(Long productoId) {
+        return cantidadProductoAlmacenRepository.findByProductoId(productoId);
+    }
 }

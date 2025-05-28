@@ -18,7 +18,7 @@ public class CantidadProductoAlmacenEntity {
     private Long id;
 
     @Column(name="cantidad", nullable = false)
-    private String cantidad;
+    private Integer cantidad;
 
     @ManyToOne
     @JoinColumn(name = "id_pro",nullable = false)

@@ -10,6 +10,7 @@ public interface CantidadProductoAlmacenService {
     void deleteById(Long id);
     CantidadProductoAlmacenEntity findById(Long id);
     List<CantidadProductoAlmacenEntity> findByTipoProducto(Long idTipoProducto);
+    CantidadProductoAlmacenEntity findByProductoId(Long productoId);
 }
 
 
