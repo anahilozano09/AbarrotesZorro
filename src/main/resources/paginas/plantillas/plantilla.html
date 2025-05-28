@@ -8,6 +8,12 @@
     <title>Abarrotes Zorro</title>
     <link th:href="@{/bootstrap/css/bootstrap.min.css}" rel="stylesheet">
     <link th:href="@{/bootstrap/css/Style.css}" rel="stylesheet">
+
+    <script src="https://code.jquery.com/jquery-3.6.1.min.js"
+            integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ="
+            crossorigin="anonymous"></script>
+
+    <script th:src="@{/bootstrap/js/bootstrap.bundle.min.js}"></script>
 </head>
 <body class="d-flex flex-column min-vh-100">
 <header th:fragment="header">
@@ -31,6 +37,12 @@
                         </li>
                         <li class="nav-item" sec:authorize="hasAuthority('ROLE_Administrador')">
                             <a class="nav-link" th:href="@{/admin/almacen}">Almacen</a>
+                        </li>
+                        <li class="nav-item" sec:authorize="hasAuthority('ROLE_Administrador')">
+                            <a class="nav-link" th:href="@{/admin/pedido}">Pedidos</a>
+                        </li>
+                        <li class="nav-item" sec:authorize="hasAuthority('ROLE_Administrador')">
+                            <a class="nav-link" th:href="@{/admin/pedido/alta-pedido}">Pedido nuevo</a>
                         </li>
 
 
