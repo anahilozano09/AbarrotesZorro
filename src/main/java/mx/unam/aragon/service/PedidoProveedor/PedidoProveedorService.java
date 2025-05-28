@@ -9,4 +9,5 @@ public interface PedidoProveedorService {
     List<PedidoProveedorEntity> findAll();
     void deleteById(Long id);
     PedidoProveedorEntity findById(Long id);
+    PedidoProveedorEntity findByProductoId(Long productoId);
 }

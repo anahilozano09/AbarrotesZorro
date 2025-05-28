@@ -90,6 +90,12 @@
 			<version>5.2.3</version>
 		</dependency>
 
+<!--		Dependencias para el correo-->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-mail</artifactId>
+		</dependency>
+
     </dependencies>
 
 	<build>

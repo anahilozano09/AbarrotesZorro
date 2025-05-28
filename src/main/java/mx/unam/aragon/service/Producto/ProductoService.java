@@ -12,4 +12,5 @@ public interface ProductoService {
     ProductoEntity findById(Long id);
     List<ProductoEntity> findByTipoProductoId(Long tipoProductoId);
     ProductoEntity findByTipoProducto(TipoProductoEntity tipoProducto);
+    ProductoEntity findByProveedorId(Long proveedorId);
 }
