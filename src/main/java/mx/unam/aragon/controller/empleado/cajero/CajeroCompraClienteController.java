@@ -7,6 +7,7 @@ import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeBodyPart;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.mail.internet.MimeMultipart;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import mx.unam.aragon.model.entity.*;
 import mx.unam.aragon.service.CantidadProductoAlmacen.CantidadProductoAlmacenService;
@@ -17,11 +18,14 @@ import mx.unam.aragon.service.HistoricoProductos.HistoricoProductosService;
 import mx.unam.aragon.service.PedidoProveedor.PedidoProveedorService;
 import mx.unam.aragon.service.Producto.ProductoService;
 import mx.unam.aragon.service.TipoProducto.TipoProductoService;
+import mx.unam.aragon.util.EmailService;
+import mx.unam.aragon.util.PDFGenerador;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -53,6 +57,10 @@ public class CajeroCompraClienteController {
     private HistoricoProductosService historicoProductosService;
     @Autowired
     private CantidadProductoAlmacenService cantidadProductoAlmacenService;
+    @Autowired
+    private PDFGenerador pdfGenerador;
+    @Autowired
+    private EmailService emailService;
 
     @Value("${external.image.dir}")
     private String archivoRuta;
@@ -91,7 +99,8 @@ public class CajeroCompraClienteController {
     @PostMapping("/guardar-compra")
     public String guardarCompra(@RequestParam("valorBusqueda") String valorBusqueda,
                                 @RequestParam(value = "productos", required = false) List<String> productos,
-                                Model model, Principal principal) {
+                                Model model, Principal principal,
+                                RedirectAttributes redirectAttributes) {
 
         Optional<ClienteEntity> clienteOpt = buscarClientePorCriterios(valorBusqueda);
 
@@ -174,10 +183,58 @@ public class CajeroCompraClienteController {
         compra.setDetalles(detalles);
         compraClienteService.save(compra); // Actualiza la compra con total y detalles
 
-        model.addAttribute("contenido", "Compra registrada con éxito.");
-        model.addAttribute("cliente", cliente);
-        model.addAttribute("tipoProducto", tipoProductoService.findAll());
-        return "cajero/alta-compraCliente";
+        if (cliente.getEmail() != null && !cliente.getEmail().isEmpty()) {
+            try {
+                // 1. Crear lista de productos para el PDF
+                List<PDFGenerador.ProductoCompra> productosPDF = new ArrayList<>();
+                for (DetalleCompraClienteEntity detalle : detalles) {
+                    ProductoEntity p = detalle.getProducto();
+                    productosPDF.add(new PDFGenerador.ProductoCompra(
+                            p.getNombre(),
+                            detalle.getCantidad(),
+                            p.getPrecio(),
+                            p.getImagen()
+                    ));
+                }
+
+                // 2. Generar PDF en archivo temporal
+                java.io.File tempFile = java.io.File.createTempFile("factura_", ".pdf");
+                try (java.io.FileOutputStream fos = new java.io.FileOutputStream(tempFile)) {
+                    pdfGenerador.generarFactura(productosPDF, fos);
+                }
+
+                // 3. Enviar correo con adjunto
+                String asunto = "Factura de su compra - " + LocalDate.now();
+                String cuerpo = "Estimado " + cliente.getNombre() + ",\n\n"
+                        + "Adjuntamos la factura de su compra realizada el "
+                        + compra.getFecha().toLocalDate() + ".\n"
+                        + "Total: $" + totalCompra + "\n\n"
+                        + "Gracias por su preferencia!";
+
+                emailService.enviarCorreoConAdjunto(
+                        cliente.getEmail(),
+                        asunto,
+                        cuerpo,
+                        tempFile
+                );
+
+                // 4. Eliminar archivo temporal
+                tempFile.delete();
+
+                redirectAttributes.addFlashAttribute("success", "Compra registrada y factura enviada al correo!");
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                redirectAttributes.addFlashAttribute("avisoCorreo",
+                        "Compra exitosa, pero error al enviar correo: " + e.getMessage());
+            }
+        } else {
+            redirectAttributes.addFlashAttribute("avisoCorreo",
+                    "Compra exitosa, pero el cliente no tiene email registrado");
+        }
+        // ====================================================
+
+        return "redirect:/cajero/compra-cliente";
     }
 
     private Optional<ClienteEntity> buscarClientePorCriterios(String valor) {
@@ -187,5 +244,16 @@ public class CajeroCompraClienteController {
         return clienteOpt;
     }
 
+    @GetMapping("/cajero/compra-cliente/factura")
+    public void generarFactura(HttpServletResponse response) throws Exception {
+        List<PDFGenerador.ProductoCompra> productos = List.of(
+                new PDFGenerador.ProductoCompra("Jabón", 2, 12.5, "jabon.jpg"),
+                new PDFGenerador.ProductoCompra("Shampoo", 1, 30.0, "shampoo.jpg")
+        );
 
+        response.setContentType("application/pdf");
+        response.setHeader("Content-Disposition", "attachment; filename=\"factura.pdf\"");
+
+        pdfGenerador.generarFactura(productos, response.getOutputStream());
+    }
 }
