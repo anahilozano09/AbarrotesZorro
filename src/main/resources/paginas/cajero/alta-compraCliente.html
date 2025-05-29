@@ -5,7 +5,7 @@
 <header th:replace="~{plantillas/plantilla :: header}"></header>
 
 <main class="container custom-container shadow-lg p-3 mt-5 mb-5 bg-body-tertiary rounded">
-    <h1 class="text-center">Registrar Compra de Cliente</h1>
+    <h1 class="text-center mb-5">Registrar Compra de Cliente</h1>
     <br>
 
     <form th:action="@{/cajero/compra-cliente/guardar-compra}" method="post" id="formCompra">
@@ -16,36 +16,43 @@
 
                 <label for="valorBusqueda" style="font-size: 1.5rem">Cuenta / Email / Teléfono del cliente:</label>
                 <br>
-                <div class="input-group mb-3">
+                <div class="mb-3">
                     <input type="text" style="width: 100%; height: 35px" id="valorBusqueda" name="valorBusqueda"
                            th:value="${cliente != null} ? ${cliente.numCuenta} : ''" required/>
-                    <button type="submit" id="buscarClienteBtn" class="btn btn-success custom-button" style="font-size: 1.2rem; white-space: nowrap;">
-                        Buscar Cliente
-                    </button>
+                    <div class="d-flex justify-content-center mt-3 gap-3">
+                        <button type="submit" id="buscarClienteBtn" class="btn btn-success custom-button" style="font-size: 1.2rem; height: 3rem;">
+                            Buscar Cliente
+                        </button>
+
+                        <a th:href="@{/cajero/alta-cliente}" id="nuevoClienteBtn" class="btn btn-primary custom-button" style="font-size: 1.2rem; height: 3rem;">
+                            Añadir Cliente
+                        </a>
+                    </div>
                 </div>
 
+
                 <!-- Nombre del cliente -->
-                <div th:if="${cliente != null}" class="mb-3">
+                <div th:if="${cliente != null}" class="d-flex justify-content-center mb-3">
                     <strong>Cliente:</strong> <span th:text="${cliente.nombre}"></span>
                     <input type="hidden" name="clienteId" th:value="${cliente.id}" />
                 </div>
 
                 <!-- Tipo de Producto -->
-                <label for="tipoProducto" style="font-size: 1.5rem">Tipo de Producto:</label>
-                <select id="tipoProducto" name="tipoProductoId" class="form-select mb-3"
+                <label class="ms-4" for="tipoProducto" style="font-size: 1.5rem">Tipo de Producto:</label>
+                <select id="tipoProducto" name="tipoProductoId" class="form-select mt-3 mb-3"
                         th:disabled="${cliente == null}">
                     <option value="">-- Selecciona un tipo de producto --</option>
                     <option th:each="t : ${tipoProducto}" th:value="${t.id}" th:text="${t.tipo}"></option>
                 </select>
 
                 <!-- Producto -->
-                <label for="producto" style="font-size: 1.5rem">Producto:</label>
-                <select id="producto" class="form-select mb-3" disabled>
+                <label class="ms-4" for="producto" style="font-size: 1.5rem">Producto:</label>
+                <select id="producto" class="form-select mt-3 mb-3" disabled>
                     <option value="">-- Selecciona un producto --</option>
                 </select>
 
                 <!-- Cantidad -->
-                <div class="d-flex flex-column align-items-center mb-3">
+                <div class="d-flex flex-column align-items-center mt-5 ms-4 mb-5">
                     <label for="cantidad" style="font-size: 1.5rem">Cantidad:</label>
                     <input type="number" id="cantidad" class="form-control text-center" min="1" value="1" style="max-width: 100px;" required disabled/>
                 </div>
@@ -56,7 +63,7 @@
                 </div>
 
                 <!-- Botón de finalizar compra -->
-                <div class="d-flex justify-content-center">
+                <div class="d-flex justify-content-center mt-5">
                     <button type="submit" class="custom-button btn btn-success" style="font-size: 1.2rem" id="btnFinalizarCompra" disabled>Finalizar Compra</button>
                 </div>
             </div>
@@ -79,20 +86,14 @@
                         <tbody id="carritoBody"></tbody>
                     </table>
                 </div>
-                <div class="mt-auto">
-                    <p class="d-flex justify-content-end" style="font-size: 1.3rem"><strong>Total:</strong> $<span id="totalCarrito">0.00</span></p>
+                <div class="mt-auto" style="background-color:#820E16; color: white; border-color: #1a1d20">
+                    <p class="d-flex justify-content-end me-5" style="font-size: 1.3rem"><strong>Total:</strong> $<span id="totalCarrito">0.00</span></p>
                 </div>
             </div>
         </div>
 
         <!-- Inputs ocultos para enviar productos y cantidades -->
         <div id="inputsCarrito"></div>
-
-        <!-- Debug visual -->
-        <div>
-            <h5>Debug Productos Enviados:</h5>
-            <pre id="debugProductos"></pre>
-        </div>
 
     </form>
 
@@ -102,149 +103,7 @@
 </main>
 
 <footer th:replace="~{plantillas/plantilla :: footer}"></footer>
-<script th:inline="javascript">
-    /*<![CDATA[*/
-    document.addEventListener("DOMContentLoaded", function () {
-        const tipoProductoSelect = document.getElementById("tipoProducto");
-        const productoSelect = document.getElementById("producto");
-        const carritoBody = document.getElementById("carritoBody");
-        const totalCarrito = document.getElementById("totalCarrito");
-        const cantidadInput = document.getElementById("cantidad");
-        const btnAgregarCarrito = document.getElementById("btnAgregarCarrito");
-        const btnFinalizarCompra = document.getElementById("btnFinalizarCompra");
-        const inputsCarrito = document.getElementById("inputsCarrito");
-        const buscarClienteBtn = document.getElementById("buscarClienteBtn");
-        const debugProductos = document.getElementById("debugProductos");
-        const RUTA_IMAGENES = /*[[@{/external-images/}]]*/ "/external-images/";
-
-        let total = 0;
-        let carrito = [];
-
-        // Si ya hay cliente cargado, habilitamos controles
-        if (document.querySelector("input[name='clienteId']")) {
-            tipoProductoSelect.disabled = false;
-            btnFinalizarCompra.disabled = false;
-        }
-
-        buscarClienteBtn.addEventListener("click", function(e) {
-            const valor = document.getElementById("valorBusqueda").value.trim();
-            if (!valor) {
-                e.preventDefault();
-                alert("Por favor, ingresa un dato de cliente");
-            }
-        });
-
-        tipoProductoSelect.addEventListener("change", function () {
-            const tipoProductoId = this.value;
-            productoSelect.innerHTML = '<option value="">-- Selecciona un producto --</option>';
-            productoSelect.disabled = true;
-            cantidadInput.disabled = true;
-            btnAgregarCarrito.disabled = true;
-            if (!tipoProductoId) return;
-
-            fetch(`/cajero/compra-cliente/productos-por-tipo/${tipoProductoId}`)
-                    .then(r => r.json())
-                .then(data => {
-                    data.forEach(prod => {
-                        const option = document.createElement("option");
-                        option.value = prod.id;
-                        option.textContent = `${prod.nombre} - $${prod.precio.toFixed(2)}`;
-                        option.dataset.nombre = prod.nombre;
-                        option.dataset.precio = prod.precio;
-                        option.dataset.imagen = `${RUTA_IMAGENES}${prod.imagen}`;
-                        productoSelect.appendChild(option);
-                    });
-                    productoSelect.disabled = false;
-                });
-        });
-
-        productoSelect.addEventListener("change", function () {
-            const selected = this.selectedOptions[0];
-            if (selected && selected.value) {
-                cantidadInput.disabled = false;
-                btnAgregarCarrito.disabled = false;
-            } else {
-                cantidadInput.disabled = true;
-                btnAgregarCarrito.disabled = true;
-            }
-        });
-
-        btnAgregarCarrito.addEventListener("click", function () {
-            const selected = productoSelect.selectedOptions[0];
-            if (!selected || !selected.value) return;
-
-            const productoId = selected.value;
-            const nombre = selected.dataset.nombre;
-            const precio = parseFloat(selected.dataset.precio);
-            const imagen = selected.dataset.imagen;
-            const cantidad = parseInt(cantidadInput.value);
-
-            if (cantidad <= 0 || isNaN(cantidad)) {
-                alert("Ingresa una cantidad válida.");
-                return;
-            }
-
-            const subtotal = precio * cantidad;
-
-            carrito.push({ productoId, cantidad });
-            total += subtotal;
-            totalCarrito.textContent = total.toFixed(2);
-
-            const index = carrito.length - 1;
-
-            const tr = document.createElement("tr");
-            tr.dataset.index = index;
-            tr.innerHTML = `
-                <td><img src="${imagen}" width="50" alt="${nombre}"/></td>
-                <td>${nombre}</td>
-                <td>${cantidad}</td>
-                <td>$${precio.toFixed(2)}</td>
-                <td>$${subtotal.toFixed(2)}</td>
-                <td><button type="button" class="btn btn-danger btn-sm">Eliminar</button></td>
-            `;
-            carritoBody.appendChild(tr);
-
-            // input con nombre 'productos[]' para que Spring lo reciba como lista
-            const input = document.createElement("input");
-            input.type = "hidden";
-            input.name = "productos[]";
-            input.value = `${productoId}-${cantidad}`;
-            input.dataset.index = index;
-            inputsCarrito.appendChild(input);
-
-            debugProductos.textContent = Array.from(inputsCarrito.querySelectorAll("input")).map(i => i.value).join("\n");
-
-            // Reset selección para agregar más productos
-            productoSelect.selectedIndex = 0;
-            cantidadInput.value = 1;
-            cantidadInput.disabled = true;
-            btnAgregarCarrito.disabled = true;
-        });
-
-        carritoBody.addEventListener("click", function(e) {
-            if (e.target.classList.contains("btn-danger")) {
-                const row = e.target.closest("tr");
-                const index = row.dataset.index;
-                const subtotal = parseFloat(row.cells[4].textContent.replace('$', ''));
-                total -= subtotal;
-                totalCarrito.textContent = total.toFixed(2);
-                row.remove();
-
-                const input = inputsCarrito.querySelector(`input[data-index="${index}"]`);
-                if (input) input.remove();
-
-                debugProductos.textContent = Array.from(inputsCarrito.querySelectorAll("input")).map(i => i.value).join("\n");
-            }
-        });
-
-        document.getElementById("formCompra").addEventListener("submit", function(e) {
-            // Opcional: si quieres depurar productos antes de enviar
-            const productos = Array.from(document.querySelectorAll("input[name='productos[]']")).map(i => i.value);
-            console.log("Productos a enviar:", productos);
-        });
-    });
-    /*]]>*/
-</script>
+<script th:src="@{/bootstrap/js/script_alta_compraCliente.js}"></script>
 </body>
 </html>
 
