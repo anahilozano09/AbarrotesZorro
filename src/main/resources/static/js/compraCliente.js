@@ -8,119 +8,84 @@ document.addEventListener("DOMContentLoaded", function () {
     const btnFinalizarCompra = document.getElementById("btnFinalizarCompra");
     const inputsCarrito = document.getElementById("inputsCarrito");
 
-    let carrito = [];
     let total = 0;
+    let carrito = [];
 
-    document.getElementById("buscarClienteBtn").addEventListener("click", () => {
+    document.getElementById("buscarClienteBtn").addEventListener("click", function () {
         const valor = document.getElementById("valorBusqueda").value.trim();
-        if (!valor) return alert("Ingresa un número de cuenta, email o teléfono");
+        if (!valor) return alert("Por favor, ingresa un dato de cliente");
 
         fetch(`/alta-compraCliente/api/clientes/buscar?valor=${encodeURIComponent(valor)}`)
-            .then(resp => {
-                if (!resp.ok) throw new Error();
-                return resp.json();
-            })
+            .then(r => r.ok ? r.json() : Promise.reject("No encontrado"))
             .then(data => {
                 document.getElementById("nombreCliente").textContent = data.nombre;
-                document.getElementById("clienteId").value = data.id;
                 document.getElementById("nombreClienteContainer").style.display = "block";
-
                 tipoProductoSelect.disabled = false;
-                productoSelect.innerHTML = '<option value="">-- Selecciona un producto --</option>';
-            })
-            .catch(() => {
-                alert("Cliente no encontrado.");
-                document.getElementById("clienteId").value = "";
-                document.getElementById("nombreClienteContainer").style.display = "none";
-                tipoProductoSelect.disabled = true;
                 productoSelect.disabled = true;
                 cantidadInput.disabled = true;
                 btnAgregarCarrito.disabled = true;
-                btnFinalizarCompra.disabled = true;
+                btnFinalizarCompra.disabled = false;
                 productoSelect.innerHTML = '<option value="">-- Selecciona un producto --</option>';
-            });
+            })
+            .catch(() => alert("Cliente no encontrado."));
     });
 
     tipoProductoSelect.addEventListener("change", function () {
         const tipoProductoId = this.value;
         productoSelect.innerHTML = '<option value="">-- Selecciona un producto --</option>';
-        if (tipoProductoId) {
-            fetch(`/api/productos?tipoProductoId=${tipoProductoId}`)
-                .then(resp => resp.json())
-                .then(data => {
-                    data.forEach(prod => {
-                        const option = document.createElement("option");
-                        option.value = prod.id;
-                        option.textContent = `${prod.nombre} - $${prod.precio.toFixed(2)}`;
-                        option.dataset.precio = prod.precio;
-                        option.dataset.nombre = prod.nombre;
-                        option.dataset.imagen = prod.imagen;
-                        productoSelect.appendChild(option);
-                    });
-                    productoSelect.disabled = false;
+        if (!tipoProductoId) return;
+
+        fetch(`/api/productos?tipoProductoId=${tipoProductoId}`)
+            .then(r => r.json())
+            .then(data => {
+                data.forEach(prod => {
+                    const option = document.createElement("option");
+                    option.value = prod.id;
+                    option.textContent = `${prod.nombre} - $${prod.precio.toFixed(2)}`;
+                    option.dataset.nombre = prod.nombre;
+                    option.dataset.precio = prod.precio;
+                    option.dataset.imagen = prod.imagen;
+                    productoSelect.appendChild(option);
                 });
-        } else {
-            productoSelect.disabled = true;
-        }
+                productoSelect.disabled = false;
+            });
     });
 
-    productoSelect.addEventListener("change", () => {
-        if (productoSelect.value) {
-            cantidadInput.disabled = false;
-            btnAgregarCarrito.disabled = false;
-        } else {
-            cantidadInput.disabled = true;
-            btnAgregarCarrito.disabled = true;
-        }
+    productoSelect.addEventListener("change", function () {
+        const selected = this.selectedOptions[0];
+        cantidadInput.disabled = !selected;
+        btnAgregarCarrito.disabled = !selected;
     });
 
-    btnAgregarCarrito.addEventListener("click", () => {
-        const selectedOption = productoSelect.options[productoSelect.selectedIndex];
-        const id = productoSelect.value;
-        const nombre = selectedOption.dataset.nombre;
-        const precio = parseFloat(selectedOption.dataset.precio);
-        const imagen = selectedOption.dataset.imagen;
+    btnAgregarCarrito.addEventListener("click", function () {
+        const selected = productoSelect.selectedOptions[0];
+        const productoId = selected.value;
+        const nombre = selected.dataset.nombre;
+        const precio = parseFloat(selected.dataset.precio);
+        const imagen = selected.dataset.imagen;
         const cantidad = parseInt(cantidadInput.value);
+        const subtotal = precio * cantidad;
 
-        if (carrito.find(p => p.id === id)) {
-            alert("Este producto ya fue agregado al carrito.");
-            return;
-        }
-
-        const subtotal = cantidad * precio;
-        carrito.push({ id, nombre, cantidad, precio, imagen, subtotal });
+        carrito.push({ productoId, cantidad });
         total += subtotal;
         totalCarrito.textContent = total.toFixed(2);
 
         const tr = document.createElement("tr");
         tr.innerHTML = `
-            <td><img src="/img/${imagen}" style="width: 60px"></td>
+            <td><img src="/images/${imagen}" width="50"/></td>
             <td>${nombre}</td>
             <td>${cantidad}</td>
             <td>$${precio.toFixed(2)}</td>
             <td>$${subtotal.toFixed(2)}</td>
-            <td><button type="button" class="btn btn-danger btn-sm btnEliminar">Eliminar</button></td>
+            <td><button type="button" class="btn btn-danger btn-sm">Eliminar</button></td>
         `;
         carritoBody.appendChild(tr);
 
-        const inputProd = document.createElement("input");
-        inputProd.type = "hidden";
-        inputProd.name = "productos";
-        inputProd.value = `${id}-${cantidad}`;
-        inputsCarrito.appendChild(inputProd);
-
-        tr.querySelector(".btnEliminar").addEventListener("click", () => {
-            carrito = carrito.filter(p => p.id !== id);
-            total -= subtotal;
-            totalCarrito.textContent = total.toFixed(2);
-            tr.remove();
-            inputsCarrito.removeChild(inputProd);
-        });
-
-        productoSelect.selectedIndex = 0;
-        cantidadInput.value = 1;
-        cantidadInput.disabled = true;
-        btnAgregarCarrito.disabled = true;
-        productoSelect.disabled = true;
+        const input = document.createElement("input");
+        input.type = "hidden";
+        input.name = "productos";
+        input.value = `${productoId}-${cantidad}`;
+        inputsCarrito.appendChild(input);
     });
 });
+

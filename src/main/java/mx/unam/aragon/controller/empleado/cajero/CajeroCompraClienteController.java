@@ -68,67 +68,70 @@ public class CajeroCompraClienteController {
     @PreAuthorize("hasAuthority('ROLE_Cajero')")
     @PostMapping("guardar-compra")
     public String guardarCompra(@RequestParam String valorBusqueda,
-                                @RequestParam Long productoId,
-                                @RequestParam Integer cantidad,
-                                Model model, Principal principal){
-        Optional<ClienteEntity> clienteOpt = clienteService.findByNumCuenta(valorBusqueda);
-        if (!clienteOpt.isPresent()) clienteOpt = clienteService.findByEmail(valorBusqueda);
-        if (!clienteOpt.isPresent()) clienteOpt = clienteService.findByTelefono(valorBusqueda);
+                                @RequestParam(required = false) Long productoId,
+                                @RequestParam(required = false) Integer cantidad,
+                                Model model, Principal principal) {
 
-        if (clienteOpt.isEmpty()){
-            model.addAttribute("error", "Cliente no encontrado con el dato ingresado.");
-            model.addAttribute("tipoProductos", tipoProductoService.findAll());
+        // Buscar cliente por número de cuenta, email o teléfono
+        Optional<ClienteEntity> clienteOpt = clienteService.findByNumCuenta(valorBusqueda);
+        if (clienteOpt.isEmpty()) clienteOpt = clienteService.findByEmail(valorBusqueda);
+        if (clienteOpt.isEmpty()) clienteOpt = clienteService.findByTelefono(valorBusqueda);
+
+        if (clienteOpt.isEmpty()) {
+            model.addAttribute("error", "No se encontró un cliente con el valor proporcionado.");
+            model.addAttribute("tipoProducto", tipoProductoService.findAll());
             model.addAttribute("productos", productoService.findAll());
             return "cajero/alta-compraCliente";
         }
 
-        try{
-            ClienteEntity cliente = clienteOpt.get();
+        ClienteEntity cliente = clienteOpt.get();
 
-            Optional<EmpleadoEntity> empleado = Optional.ofNullable(empleadoService.findByUsername(principal.getName())
-                    .orElseThrow(() -> new IllegalArgumentException("Empleado no encontrado")));
+        try {
+            // Obtener empleado que está logueado
+            EmpleadoEntity empleado = empleadoService.findByUsername(principal.getName())
+                    .orElseThrow(() -> new IllegalArgumentException("Empleado no encontrado"));
 
+            // Obtener producto y validar existencia en inventario
             ProductoEntity producto = productoService.findById(productoId);
-            ProductoCompradoEntity productoComprado = ProductoCompradoEntity.builder()
-                    .producto(producto)
-                    .cantidad(cantidad)
-                    .build();
-
             CantidadProductoAlmacenEntity cantidadProductoAlmacen = cantidadProductoAlmacenService.findByProductoId(productoId);
-
             int cantidadActual = cantidadProductoAlmacen.getCantidad();
+
             if (cantidadActual < cantidad) {
                 throw new IllegalArgumentException("No hay suficiente stock");
             }
 
+            // Registrar compra del cliente
             CompraClienteEntity compraCliente = CompraClienteEntity.builder()
                     .cliente(cliente)
-                    .empleado(empleado.get())
-                    .productoComprado(productoComprado)
+                    .empleado(empleado)
                     .fecha(LocalDate.now())
-                    .total(producto.getPrecio()*cantidad)
+                    .total(producto.getPrecio() * cantidad)
                     .build();
 
+            // Registrar en histórico y actualizar cantidad
             HistoricoProductosEntity historicoProducto = HistoricoProductosEntity.builder()
                     .compraCliente(compraCliente)
                     .cantidadProductoAlmacen(cantidadProductoAlmacen)
-                    .cantidadAct(cantidadProductoAlmacen.getCantidad()-cantidad)
+                    .cantidadAct(cantidadActual - cantidad)
                     .build();
 
             compraClienteService.save(compraCliente);
             historicoProductosService.save(historicoProducto);
 
+            // Actualizar modelo con mensaje
             model.addAttribute("contenido", "Registro de Compra exitoso");
 
-        } catch (Exception e){
-            model.addAttribute("error","Registro de Compra fallido");
-
+        } catch (Exception e) {
+            model.addAttribute("error", "Registro de Compra fallido: " + e.getMessage());
         }
 
-        model.addAttribute("tipoProductos", tipoProductoService.findAll());
+        // Cargar nuevamente la vista con tipos y productos
+        model.addAttribute("tipoProducto", tipoProductoService.findAll());
         model.addAttribute("productos", productoService.findAll());
+        model.addAttribute("cliente", clienteOpt.get()); // para mantenerlo en la vista si deseas
         return "cajero/alta-compraCliente";
 
     }
+
 
 }
