@@ -28,4 +28,5 @@ public class DetalleCompraClienteEntity{
     @JoinColumn(name = "id_pro",nullable = false)
     private ProductoEntity producto;
 
+
 }

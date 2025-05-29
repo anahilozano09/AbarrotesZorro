@@ -32,7 +32,8 @@
 
                 <!-- Tipo de Producto -->
                 <label for="tipoProducto" style="font-size: 1.5rem">Tipo de Producto:</label>
-                <select id="tipoProducto" name="tipoProductoId" class="form-select mb-3" disabled>
+                <select id="tipoProducto" name="tipoProductoId" class="form-select mb-3"
+                        th:disabled="${cliente == null}">
                     <option value="">-- Selecciona un tipo de producto --</option>
                     <option th:each="t : ${tipoProducto}" th:value="${t.id}" th:text="${t.tipo}"></option>
                 </select>
@@ -102,6 +103,7 @@
 
 <footer th:replace="~{plantillas/plantilla :: footer}"></footer>
 <script th:inline="javascript">
+    /*<![CDATA[*/
     document.addEventListener("DOMContentLoaded", function () {
         const tipoProductoSelect = document.getElementById("tipoProducto");
         const productoSelect = document.getElementById("producto");
@@ -140,8 +142,8 @@
             btnAgregarCarrito.disabled = true;
             if (!tipoProductoId) return;
 
-            fetch(`/api/productos?tipoProductoId=${tipoProductoId}`)
-                .then(r => r.json())
+            fetch(`/cajero/compra-cliente/productos-por-tipo/${tipoProductoId}`)
+                    .then(r => r.json())
                 .then(data => {
                     data.forEach(prod => {
                         const option = document.createElement("option");
@@ -236,10 +238,13 @@
         });
 
         document.getElementById("formCompra").addEventListener("submit", function(e) {
-            const productos = Array.from(document.querySelectorAll("input[name='productos']")).map(i => i.value);
+            // Opcional: si quieres depurar productos antes de enviar
+            const productos = Array.from(document.querySelectorAll("input[name='productos[]']")).map(i => i.value);
             console.log("Productos a enviar:", productos);
         });
     });
+    /*]]>*/
 </script>
 </body>
 </html>
+

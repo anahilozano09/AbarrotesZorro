@@ -7,7 +7,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Entity(name = "compra_cliente")
 @Data
@@ -24,7 +27,7 @@ public class CompraClienteEntity {
     private Double total;
 
     @Column(name="fecha", nullable = false)
-    private LocalDate fecha;
+    private LocalDateTime fecha;
 
     @ManyToOne
     @JoinColumn(name = "id_cliente",nullable = false)
@@ -34,7 +37,8 @@ public class CompraClienteEntity {
     @JoinColumn(name = "id_emp",nullable = false)
     private EmpleadoEntity empleado;
 
-
+    @OneToMany(mappedBy = "compra", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<DetalleCompraClienteEntity> detalles = new ArrayList<>();
 
 }
 
