@@ -1,72 +1,59 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
-<head th:replace="~{plantillas/plantilla :: head}"></head>
+<head th:replace="~{plantillas/plantilla :: head}">
+    <th:block th:unless="${#strings.contains(content, 'jquery')}">
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    </th:block>
+</head>
 <body>
 <header th:replace="~{plantillas/plantilla :: header}"></header>
 
 <main class="container custom-container shadow-lg p-3 mt-5 mb-5 bg-body-tertiary rounded">
-    <h1 class="text-center">Registrar Compra de Cliente</h1>
-    <br>
+    <h1 class="mb-4" th:text="${contenido}">Pedido a Proveedor</h1>
+
+    <div th:if="${mensaje}" class="alert alert-success" th:text="${mensaje}"></div>
+
     <div class="row">
-        <!-- 🧾 Formulario -->
         <div class="col-md-4 border-end">
-            <form th:action="@{/alta-compraCliente/guardar-compra}" th:object="${compra}" method="post">
-
-                <!-- Búsqueda de Cliente -->
-                <div>
-                    <label for="valorBusqueda" style="font-size: 1.5rem">Cuenta / Email / Teléfono del cliente:</label>
-                    <br>
-                    <input type="text" style="width: 80%; height: 35px" id="valorBusqueda" required/>
-                    <button type="button" id="buscarClienteBtn" class="custom-button btn btn-success mt-2" style="font-size: 1.2rem">Buscar</button>
-                    <div class="d-flex justify-content-center">
-                        <a th:href="@{/cajero/alta-cliente}" class="btn btn-primary custom-button" style="width: 10rem; height: 2.7rem; font-size: 1.2rem;">Alta de cliente</a>
-                    </div>
-                </div>
-
-
-                <!-- Nombre del cliente -->
-                <div id="nombreClienteContainer" class="mt-3" style="display:none;">
-                    <strong>Cliente:</strong> <span id="nombreCliente"></span>
-                    <input type="hidden" name="cliente.id" id="clienteId"/>
-                </div>
-
-                <br>
+            <form id="formPedido">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
 
                 <!-- Tipo de Producto -->
-                <label for="tipoProducto" style="font-size: 1.5rem">Tipo de Producto:</label>
-                <select id="tipoProducto" name="tipoProducto.id" class="form-select mb-3" disabled>
-                    <option value="">-- Selecciona un tipo de producto --</option>
-                    <option th:each="t : ${tipoProducto}" th:value="${t.id}" th:text="${t.tipo}"></option>
-                </select>
+                <div class="mb-3">
+                    <label class="form-label">Tipo de Producto:</label>
+                    <select class="form-select" id="tipoProductoSelect" name="idTipoProducto">
+                        <option value="0">Todos los tipos</option>
+                        <option th:each="tipo : ${listaTipoProducto}"
+                                th:value="${tipo.id}"
+                                th:text="${tipo.tipo}">
+                        </option>
+                    </select>
+                </div>
 
                 <!-- Producto -->
-                <label for="producto" style="font-size: 1.5rem">Producto:</label>
-                <select id="producto" name="producto.id" class="form-select mb-3" required disabled>
-                    <option value="">-- Selecciona un producto --</option>
-                </select>
+                <div class="mb-3">
+                    <label class="form-label">Producto:</label>
+                    <select class="form-select" id="productoSelect" >
+                        <option value="0">Seleccione un producto</option>
+                        <option th:each="producto : ${listaProducto}"
+                                th:value="${producto.id}"
+                                th:text="${producto.nombre}">
+                        </option>
+                    </select>
+                </div>
 
                 <!-- Cantidad -->
-                <div class="d-flex flex-column align-items-center mb-3">
-                    <label for="cantidad" style="font-size: 1.5rem">Cantidad:</label>
-                    <input type="number" id="cantidad" class="form-control text-center" min="1" value="1"
-                           style="max-width: 100px;" required disabled/>
+                <div class="mb-3">
+                    <label for="cantidad" class="form-label">Cantidad:</label>
+                    <input type="number" id="cantidad" class="form-control" min="1" value="1" required>
                 </div>
 
-
-                <!-- Botón de añadir al carrito -->
-                <div class="d-flex justify-content-center mt-5 mb-5">
-                    <button type="button" class="custom-button btn btn-primary" style="font-size: 1.2rem" id="btnAgregarCarrito">Añadir al carrito</button>
-                </div>
-                <div class="d-flex justify-content-center">
-                    <button type="submit" class="custom-button btn btn-success" style="font-size: 1.2rem">Finalizar Compra</button>
-                </div>
             </form>
         </div>
 
-        <!-- 🛒 Carrito -->
         <div class="col-md-8 d-flex flex-column justify-content-between" style="min-height: 400px;">
             <div>
-                <h3>Carrito</h3>
+                <h3>Proveedor</h3>
                 <table class="table table-bordered">
                     <thead>
                     <tr>
@@ -76,146 +63,168 @@
                         <th>Precio</th>
                     </tr>
                     </thead>
-                    <tbody id="carritoBody">
-                    <!-- Aquí se insertarán los productos -->
+                    <tbody id="proveedorInfo">
+                    <tr th:if="${not #lists.isEmpty(lista)}" th:each="item : ${lista}">
+                        <td th:text="${producto.image}"></td>
+                        <td th:text="${producto.nombre}"></td>
+                        <td th:text="${item.producto?.proveedor?.telefono}"></td>
+                        <td th:text="${producto.precio}"></td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(lista)}">
+                        <td colspan="3" class="text-center"></td>
+                    </tr>
                     </tbody>
                 </table>
             </div>
-        </div>
-        <div class="mt-auto">
-            <p class="d-flex justify-content-end" style="font-size: 1.3rem"><strong>Total:</strong> $<span id="totalCarrito">0.00</span></p>
+            <div class="mt-auto">
+                <div class="d-flex justify-content-center">
+                    <form th:action="@{/admin/pedido/guardar-pedido}" method="post" id="formFinalizar">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                        <input type="hidden" id="inputProducto" name="idProducto" required>
+                        <input type="hidden" id="inputCantidad" name="cantidad" required
+                               th:value="${#numbers.sequence(1, 1)}"> <!-- Valor por defecto -->
+                        <button type="submit" class="btn btn-success">Finalizar Pedido</button>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
-
-    <!-- Mostrar imagen decorativa -->
-    <div class="d-flex justify-content-center mt-5">
-        <img th:src="@{'/external-images/zorro.gif'}" alt="Zorro animado" style="max-width: 300px; height: auto;">
-    </div>
-
 </main>
 
 <footer th:replace="~{plantillas/plantilla :: footer}"></footer>
 
-<!-- Scripts -->
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const tipoProductoSelect = document.getElementById("tipoProducto");
-        const productoSelect = document.getElementById("producto");
-        const carritoBody = document.getElementById("carritoBody");
-        const totalCarrito = document.getElementById("totalCarrito");
-        let total = 0;
+    // Función principal de inicialización
+    function initPedidos() {
+        if (window.jQuery) {
+            setupPedidos();
+        } else {
+            document.getElementById('proveedorInfo').innerHTML = `
+            <tr>
+                <td colspan="3" class="text-danger">
+                    Error: Recarga la página. Si persiste, contacta al administrador.
+                </td>
+            </tr>`;
+        }
+    }
 
-        tipoProductoSelect.addEventListener("change", function () {
-            const tipoProductoId = this.value;
-            productoSelect.innerHTML = '<option value="">-- Selecciona un producto --</option>';
+    // Configuración de los event listeners
+    function setupPedidos() {
+        $(document).ready(function() {
+            // Estado inicial
+            $('#productoSelect').prop('disabled', true);
+            $('#inputCantidad').val(1);
 
-            if (tipoProductoId) {
-                fetch(`/api/productos?tipoProductoId=${tipoProductoId}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        data.forEach(producto => {
-                            const option = document.createElement("option");
-                            option.value = producto.id;
-                            option.textContent = `${producto.nombre} - $${producto.precio.toFixed(2)}`;
-                            option.dataset.nombre = producto.nombre;
-                            option.dataset.precio = producto.precio;
-                            option.dataset.imagen = producto.imagen;
-                            productoSelect.appendChild(option);
-                        });
-                    })
-                    .catch(error => console.error("Error al cargar productos:", error));
+
+            // Handler para cambio de tipo de producto
+            $('#tipoProductoSelect').change(function() {
+                const tipoId = $(this).val();
+                if (tipoId && tipoId !== "0") {
+                    loadProductos(tipoId);
+                } else {
+                    resetProductos();
+                }
+            });
+
+            // Handler para cambio de producto
+            $('#productoSelect').change(function() {
+                const productoId = $(this).val();
+                if (productoId && productoId !== "0") {
+                    loadProveedor(productoId);
+                    $('#inputProducto').val(productoId);
+                }
+            });
+
+            // Handler para cambio de cantidad
+            $('#cantidad').change(function() {
+                const cantidad = $(this).val();
+                if(cantidad > 0) {
+                    $('#inputCantidad').val(cantidad);
+                }
+            });
+
+            // Validación del formulario
+            $('#formFinalizar').submit(function(e) {
+                if(!$('#inputProducto').val() || $('#inputProducto').val() === "0") {
+                    e.preventDefault();
+                    alert('Por favor seleccione un producto');
+                    return false;
+                }
+
+                if(!$('#inputCantidad').val() || $('#inputCantidad').val() < 1) {
+                    e.preventDefault();
+                    alert('La cantidad debe ser al menos 1');
+                    return false;
+                }
+
+                return true;
+            });
+
+        });
+    }
+
+    // Carga los productos según el tipo seleccionado
+    function loadProductos(tipoId) {
+        $.ajax({
+            url: '/cajero/productos-por-tipo',
+            method: 'GET',
+            data: { idTipoProducto: tipoId },
+            dataType: 'json',
+            success: function(response) {
+                updateProductSelect(response);
+            },
+            error: function() {
+                alert("Error al cargar productos. Intenta nuevamente.");
             }
         });
+    }
 
-        document.getElementById("btnAgregarCarrito").addEventListener("click", function () {
-            const selectedOption = productoSelect.options[productoSelect.selectedIndex];
-            if (!selectedOption || !selectedOption.value) return;
+    // Actualiza el select de productos
+    function updateProductSelect(productos) {
+        const $select = $('#productoSelect');
+        $select.empty().append('<option value="0">Seleccione un producto</option>');
 
-            const nombre = selectedOption.dataset.nombre || "N/A";
-            const precio = parseFloat(selectedOption.dataset.precio) || 0.00;
-            const imagen = selectedOption.dataset.imagen || null;
+        if (productos && productos.length > 0) {
+            productos.forEach(function(producto) {
+                $select.append(`<option value="${producto.id}">${producto.nombre}</option>`);
+            });
+            $select.prop('disabled', false);
+        } else {
+            $select.append('<option value="0">No hay productos disponibles</option>');
+        }
+    }
 
-            const row = document.createElement("tr");
+    // Resetea el select de productos
+    function resetProductos() {
+        $('#productoSelect').empty()
+            .append('<option value="0">Seleccione un producto</option>')
+            .prop('disabled', true);
+        $('#proveedorInfo').html('<tr><td colspan="3">Seleccione un producto</td></tr>');
+    }
 
-            const imgTd = document.createElement("td");
-            if (imagen) {
-                const img = document.createElement("img");
-                img.src = `/external-images/${imagen}`;
-                img.style.maxWidth = "80px";
-                img.style.maxHeight = "80px";
-                img.className = "img-thumbnail";
-                img.alt = "Imagen del producto";
-                imgTd.appendChild(img);
+    // Carga la información del proveedor
+    function loadProveedor(productoId) {
+        $.get('/cajero/producto', { idProducto: productoId }, function(producto) {
+            if (producto) {
+                $('#productoInfo').html(`
+                <tr>
+                    <td>${producto.nombre}</td>
+                    <td>${producto.precio}</td>
+                    <td>${producto.image}</td>
+                </tr>
+            `);
             } else {
-                imgTd.textContent = "Sin imagen";
-                imgTd.className = "text-muted small";
+                $('#proveedorInfo').html('<tr><td colspan="3">Proveedor no disponible</td></tr>');
             }
-
-            const nombreTd = document.createElement("td");
-            nombreTd.textContent = nombre;
-
-            const cantidadInput = document.getElementById("cantidad");
-            const cantidad = parseInt(cantidadInput.value) || 1;
-
-            const cantidadTd = document.createElement("td");
-            cantidadTd.textContent = cantidad;
-            const precioTotal = precio * cantidad;
-            const precioTd = document.createElement("td");
-            precioTd.textContent = `$${precioTotal.toFixed(2)}`;
-
-            row.appendChild(imgTd);
-            row.appendChild(nombreTd);
-            row.appendChild(cantidadTd);
-            row.appendChild(precioTd);
-
-            total += precioTotal;
-            totalCarrito.textContent = total.toFixed(2);
-
-
-            carritoBody.appendChild(row);
+        }).fail(function() {
+            $('#proveedorInfo').html('<tr><td colspan="3">Error al cargar proveedor</td></tr>');
         });
+    }
 
-        // ✅ Buscar cliente por cuenta, email o teléfono
-        document.getElementById("buscarClienteBtn").addEventListener("click", function () {
-            const valor = document.getElementById("valorBusqueda").value.trim();
-
-            if (!valor) {
-                alert("Por favor, ingresa un número de cuenta, email o teléfono.");
-                return;
-            }
-
-            fetch(`/alta-compraCliente/api/clientes/buscar?valor=${encodeURIComponent(valor)}`)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error("Cliente no encontrado");
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    document.getElementById("nombreCliente").textContent = data.nombre;
-                    document.getElementById("clienteId").value = data.id;
-                    document.getElementById("nombreClienteContainer").style.display = "block";
-
-                    // ✅ Habilitar los selects cuando el cliente es válido
-                    tipoProductoSelect.disabled = false;
-                    productoSelect.disabled = false;
-                    document.getElementById("cantidad").disabled = false;
-                })
-                .catch(error => {
-                    alert("No se encontró un cliente con ese número de cuenta, email o teléfono.");
-                    document.getElementById("nombreClienteContainer").style.display = "none";
-                    document.getElementById("clienteId").value = "";
-
-                    // 🚫 Deshabilitar los selects cuando el cliente no existe
-                    tipoProductoSelect.disabled = true;
-                    productoSelect.disabled = true;
-
-                    console.error(error);
-                });
-        });
-    });
+    // Iniciar la aplicación
+    initPedidos();
 </script>
-
+<script th:src="@{/bootstrap/js/script_alta_compraCliente.js}"></script>
 
 </body>
 </html>

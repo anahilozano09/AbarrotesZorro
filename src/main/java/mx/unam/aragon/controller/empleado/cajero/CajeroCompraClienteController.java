@@ -1,29 +1,24 @@
 package mx.unam.aragon.controller.empleado.cajero;
 
-import jakarta.validation.Valid;
-import mx.unam.aragon.model.entity.ClienteEntity;
-import mx.unam.aragon.model.entity.CompraClienteEntity;
-import mx.unam.aragon.model.entity.TipoProductoEntity;
+import mx.unam.aragon.model.entity.*;
 import mx.unam.aragon.service.Cliente.ClienteService;
 import mx.unam.aragon.service.CompraCliente.CompraClienteService;
+import mx.unam.aragon.service.Empleado.EmpleadoService;
+import mx.unam.aragon.service.PedidoProveedor.PedidoProveedorService;
 import mx.unam.aragon.service.Producto.ProductoService;
+import mx.unam.aragon.service.ProductoComprado.ProductoCompradoService;
 import mx.unam.aragon.service.TipoProducto.TipoProductoService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Controller
-@RequestMapping(value = "alta-compraCliente")
+@RequestMapping(value = "/cajero")
 public class CajeroCompraClienteController {
 
     @Autowired
@@ -38,62 +33,71 @@ public class CajeroCompraClienteController {
     @Autowired
     ProductoService productoService;
 
-    @PreAuthorize("hasAuthority('ROLE_Cajero')")
-    @GetMapping
-    public String altaCompra(Model model){
-        CompraClienteEntity compra = new CompraClienteEntity();
-        model.addAttribute("compra",compra);
-        //Colocar una forma de buscar el cliente en el formulario
-        model.addAttribute("cliente", clienteService.findAll());
-        //Colocar una forma de buscar el tipo de producto en el formulario
-        model.addAttribute("tipoProducto", tipoProductoService.findAll());
-        //Colocar una forma de buscar el producto en el formulario dependiendo del tipo de producto
-        model.addAttribute("producto", productoService.findAll());
-        model.addAttribute("contenido","Alta Pago");
-        return "cajero/alta-compraCliente";
-    }
+    @Autowired
+    EmpleadoService empleadoService;
+
+
+    @Autowired
+    ProductoCompradoService productoCompradoService;
+
+    @Autowired
+    PedidoProveedorService pedidoProveedorService;
 
     @PreAuthorize("hasAuthority('ROLE_Cajero')")
-    @PostMapping("guardar-compra")
-    public String guardarCompra(@Valid @ModelAttribute(value = "compra") CompraClienteEntity compraCliente,
-                                BindingResult result, Model model){
-        if (result.hasErrors()) {
-            for (ObjectError error : result.getAllErrors()) {
-                System.out.println("Error: " + error.getDefaultMessage());
-            }
-            return "cajero/alta-compraCliente";
+    @GetMapping("alta-compraCliente")
+    public String altaPedido(Model model, @RequestParam(required = false) Long tipo){
+        model.addAttribute("listaTipoProducto",tipoProductoService.findAll());
+
+        if(tipo != null){
+            model.addAttribute("listaProducto",productoService.findByTipoProductoId(tipo));
+            model.addAttribute("idTipoProductoSeleccionado",tipo);
+        } else {
+            model.addAttribute("listaProducto",Collections.emptyList());
         }
-        //realizar la lògica de negocio
-        compraClienteService.save(compraCliente);
-        model.addAttribute("contenido","Se almaceno con exito");
-        return "cajero/alta-compraCliente";
+
+        return "/cajero/alta-compraCliente";
     }
 
-
-    @GetMapping("/api/clientes/buscar")
-    public ResponseEntity<Map<String, Object>> buscarCliente(@RequestParam String valor) {
-        Optional<ClienteEntity> clienteOpt = clienteService.findByNumCuenta(valor);
-
-        if (!clienteOpt.isPresent()) {
-            clienteOpt = clienteService.findByEmail(valor);
-        }
-
-        if (!clienteOpt.isPresent()) {
-            clienteOpt = clienteService.findByTelefono(valor);
-        }
-
-        return clienteOpt
-                .map(cliente -> {
-                    Map<String, Object> data = new HashMap<>();
-                    data.put("id", cliente.getId());
-                    data.put("nombre", cliente.getNombre());
-                    return ResponseEntity.ok(data);
-                })
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(Map.of("error", "Cliente no encontrado")));
+    @PreAuthorize("hasAuthority('ROLE_Cajero')")
+    @GetMapping("productos-por-tipo")
+    @ResponseBody
+    public List<ProductoEntity> getProductosByTipoProducto(@RequestParam Long idTipoProducto) {
+        System.out.println(">>> SOLICITUD RECIBIDA - Tipo ID: " + idTipoProducto);
+        List<ProductoEntity> productos = productoService.findByTipoProductoId(idTipoProducto);
+        System.out.println(">>> PRODUCTOS ENCONTRADOS: " + productos.size());
+        return productos;
     }
 
+    @PreAuthorize("hasAuthority('ROLE_Cajero')")
+    @GetMapping("producto")
+    @ResponseBody
+    public Integer getCantidadByProductoComprado(@RequestParam Long idProductoComprado) {
+        return productoCompradoService.findById(idProductoComprado).getCantidad();
+    }
 
+    @PreAuthorize("hasAuthority('ROLE_Cajero')")
+    @PostMapping("guardar-pedido")
+    public String guardarPedido(@RequestParam Long idProducto,
+                                @RequestParam Integer cantidad,
+                                RedirectAttributes redirectAttributes){
+
+        if(cantidad == null || cantidad < 1) {
+            redirectAttributes.addFlashAttribute("error", "La cantidad debe ser mayor a 0");
+            return "redirect:/cajero/alta-compraCliente";
+        }
+
+        ProductoEntity producto = productoService.findById(idProducto);
+        PedidoProveedorEntity pedido = PedidoProveedorEntity.builder()
+                .cantidad(cantidad)
+                .producto(producto)
+                .build();
+
+        pedidoProveedorService.save(pedido);
+
+        redirectAttributes.addFlashAttribute("mensaje", "Pedido solicitado correctamente");
+
+        return "redirect:/cajero/alta-compraCliente";
+    }
 
 
 }

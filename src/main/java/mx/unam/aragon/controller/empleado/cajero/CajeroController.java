@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping(value = "/cajero")
@@ -38,24 +39,29 @@ public class CajeroController {
 
     @PreAuthorize("hasAuthority('ROLE_Cajero')")
     @PostMapping("guardar-cliente")
-    public String guardarCliente(@Valid @ModelAttribute(value = "cliente") ClienteEntity cliente,
-                                 BindingResult result, Model model) {
+    public String guardarCliente(@Valid @ModelAttribute(value = "cliente")  ClienteEntity cliente,
+                                 BindingResult result,
+                                 RedirectAttributes redirectAttributes,
+                                 Model model) {
 
-        // Validar si ya existe un cliente con el mismo teléfono
-        if (clienteService.existsByTelefono(cliente.getTelefono())) {
-            result.rejectValue("telefono", "error.cliente", "Ya existe un cliente con ese número de teléfono.");
-        }
-
-        // Validar si ya existe un cliente con el mismo email
-        if (clienteService.existsByEmail(cliente.getEmail())) {
-            result.rejectValue("email", "error.cliente", "Ya existe un cliente con ese email.");
-        }
-
-        // Si hay errores de validación, se regresa al formulario
         if (result.hasErrors()) {
             model.addAttribute("contenido", "Alta Cliente");
             return "cajero/alta-cliente";
         }
+
+        if (clienteService.existsByTelefono(cliente.getTelefono())) {
+            result.rejectValue("telefono", "error.cliente", "Ya existe un cliente con ese número de teléfono.");
+        }
+
+        if (clienteService.existsByEmail(cliente.getEmail())) {
+            result.rejectValue("email", "error.cliente", "Ya existe un cliente con ese email.");
+        }
+
+        if (result.hasErrors()) {
+            model.addAttribute("contenido", "Alta Cliente");
+            return "cajero/alta-cliente";
+        }
+
 
         // Guardar el cliente
         clienteService.save(cliente);
