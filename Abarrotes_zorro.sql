@@ -71,12 +71,18 @@ CREATE TABLE compra_cliente (
     id_compra INT PRIMARY KEY NOT NULL auto_increment,
     id_cliente INT NOT NULL ,
     id_emp INT NOT NULL ,
-    id_pro INT NOT NULL ,
-    cantidad INT NOT NULL ,
     total DOUBLE NOT NULL,
     fecha DATE NOT NULL ,
     FOREIGN KEY (id_cliente) REFERENCES cliente(id_clien),
-    FOREIGN KEY (id_emp) REFERENCES empleado(id_emp),
+    FOREIGN KEY (id_emp) REFERENCES empleado(id_emp)
+);
+
+CREATE TABLE detalle_compra_cliente (
+    id_det INT PRIMARY KEY NOT NULL auto_increment,
+    id_compra INT NOT NULL,
+    id_pro INT NOT NULL,
+    cantidad INT NOT NULL,
+    FOREIGN KEY (id_compra) REFERENCES compra_cliente(id_compra),
     FOREIGN KEY (id_pro) REFERENCES producto(id_pro)
 );
 

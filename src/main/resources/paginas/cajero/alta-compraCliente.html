@@ -29,6 +29,7 @@
                     <strong>Cliente:</strong> <span th:text="${cliente.nombre}"></span>
                     <input type="hidden" name="clienteId" th:value="${cliente.id}" />
                 </div>
+
                 <!-- Tipo de Producto -->
                 <label for="tipoProducto" style="font-size: 1.5rem">Tipo de Producto:</label>
                 <select id="tipoProducto" name="tipoProductoId" class="form-select mb-3" disabled>
@@ -86,6 +87,12 @@
         <!-- Inputs ocultos para enviar productos y cantidades -->
         <div id="inputsCarrito"></div>
 
+        <!-- Debug visual -->
+        <div>
+            <h5>Debug Productos Enviados:</h5>
+            <pre id="debugProductos"></pre>
+        </div>
+
     </form>
 
     <div class="d-flex justify-content-center mt-5">
@@ -105,30 +112,32 @@
         const btnFinalizarCompra = document.getElementById("btnFinalizarCompra");
         const inputsCarrito = document.getElementById("inputsCarrito");
         const buscarClienteBtn = document.getElementById("buscarClienteBtn");
+        const debugProductos = document.getElementById("debugProductos");
         const RUTA_IMAGENES = /*[[@{/external-images/}]]*/ "/external-images/";
 
         let total = 0;
         let carrito = [];
 
-        // Habilitar controles si ya hay un cliente (cuando la página se recarga después de la búsqueda)
+        // Si ya hay cliente cargado, habilitamos controles
         if (document.querySelector("input[name='clienteId']")) {
             tipoProductoSelect.disabled = false;
             btnFinalizarCompra.disabled = false;
         }
 
-        if (buscarClienteBtn) {
-            buscarClienteBtn.addEventListener("click", function(e) {
-                const valor = document.getElementById("valorBusqueda").value.trim();
-                if (!valor) {
-                    e.preventDefault(); // Evitar envío del formulario
-                    alert("Por favor, ingresa un dato de cliente");
-                }
-            });
-        }
+        buscarClienteBtn.addEventListener("click", function(e) {
+            const valor = document.getElementById("valorBusqueda").value.trim();
+            if (!valor) {
+                e.preventDefault();
+                alert("Por favor, ingresa un dato de cliente");
+            }
+        });
 
         tipoProductoSelect.addEventListener("change", function () {
             const tipoProductoId = this.value;
             productoSelect.innerHTML = '<option value="">-- Selecciona un producto --</option>';
+            productoSelect.disabled = true;
+            cantidadInput.disabled = true;
+            btnAgregarCarrito.disabled = true;
             if (!tipoProductoId) return;
 
             fetch(`/api/productos?tipoProductoId=${tipoProductoId}`)
@@ -149,54 +158,87 @@
 
         productoSelect.addEventListener("change", function () {
             const selected = this.selectedOptions[0];
-            cantidadInput.disabled = !selected;
-            btnAgregarCarrito.disabled = !selected;
+            if (selected && selected.value) {
+                cantidadInput.disabled = false;
+                btnAgregarCarrito.disabled = false;
+            } else {
+                cantidadInput.disabled = true;
+                btnAgregarCarrito.disabled = true;
+            }
         });
 
         btnAgregarCarrito.addEventListener("click", function () {
             const selected = productoSelect.selectedOptions[0];
+            if (!selected || !selected.value) return;
+
             const productoId = selected.value;
             const nombre = selected.dataset.nombre;
             const precio = parseFloat(selected.dataset.precio);
             const imagen = selected.dataset.imagen;
             const cantidad = parseInt(cantidadInput.value);
+
+            if (cantidad <= 0 || isNaN(cantidad)) {
+                alert("Ingresa una cantidad válida.");
+                return;
+            }
+
             const subtotal = precio * cantidad;
 
             carrito.push({ productoId, cantidad });
             total += subtotal;
             totalCarrito.textContent = total.toFixed(2);
 
+            const index = carrito.length - 1;
+
             const tr = document.createElement("tr");
+            tr.dataset.index = index;
             tr.innerHTML = `
-            <td><img src="${imagen}" width="50"/></td>
-            <td>${nombre}</td>
-            <td>${cantidad}</td>
-            <td>$${precio.toFixed(2)}</td>
-            <td>$${subtotal.toFixed(2)}</td>
-            <td><button type="button" class="btn btn-danger btn-sm">Eliminar</button></td>
-        `;
+                <td><img src="${imagen}" width="50" alt="${nombre}"/></td>
+                <td>${nombre}</td>
+                <td>${cantidad}</td>
+                <td>$${precio.toFixed(2)}</td>
+                <td>$${subtotal.toFixed(2)}</td>
+                <td><button type="button" class="btn btn-danger btn-sm">Eliminar</button></td>
+            `;
             carritoBody.appendChild(tr);
 
+            // input con nombre 'productos[]' para que Spring lo reciba como lista
             const input = document.createElement("input");
             input.type = "hidden";
-            input.name = "productos";
+            input.name = "productos[]";
             input.value = `${productoId}-${cantidad}`;
+            input.dataset.index = index;
             inputsCarrito.appendChild(input);
+
+            debugProductos.textContent = Array.from(inputsCarrito.querySelectorAll("input")).map(i => i.value).join("\n");
+
+            // Reset selección para agregar más productos
+            productoSelect.selectedIndex = 0;
+            cantidadInput.value = 1;
+            cantidadInput.disabled = true;
+            btnAgregarCarrito.disabled = true;
         });
 
-        // Eliminar items del carrito
         carritoBody.addEventListener("click", function(e) {
             if (e.target.classList.contains("btn-danger")) {
                 const row = e.target.closest("tr");
+                const index = row.dataset.index;
                 const subtotal = parseFloat(row.cells[4].textContent.replace('$', ''));
                 total -= subtotal;
                 totalCarrito.textContent = total.toFixed(2);
                 row.remove();
+
+                const input = inputsCarrito.querySelector(`input[data-index="${index}"]`);
+                if (input) input.remove();
+
+                debugProductos.textContent = Array.from(inputsCarrito.querySelectorAll("input")).map(i => i.value).join("\n");
             }
         });
 
-
-
+        document.getElementById("formCompra").addEventListener("submit", function(e) {
+            const productos = Array.from(document.querySelectorAll("input[name='productos']")).map(i => i.value);
+            console.log("Productos a enviar:", productos);
+        });
     });
 </script>
 </body>

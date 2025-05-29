@@ -35,5 +35,6 @@ public class CompraClienteEntity {
     private EmpleadoEntity empleado;
 
 
+
 }
 
