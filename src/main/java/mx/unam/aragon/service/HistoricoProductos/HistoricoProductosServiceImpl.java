@@ -32,4 +32,10 @@ public class HistoricoProductosServiceImpl implements HistoricoProductosService 
         Optional<HistoricoProductosEntity> op = historicoProductosRepository.findById(id);
         return op.orElse(null);
     }
+
+    @Override
+    public List<HistoricoProductosEntity> findByCantidadProductoAlmacenId(Long cantidadProductoAlmacenId) {
+        return historicoProductosRepository.findByCantidadProductoAlmacenId(cantidadProductoAlmacenId);
+    }
+
 }

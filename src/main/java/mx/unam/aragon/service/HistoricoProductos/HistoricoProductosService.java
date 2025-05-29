@@ -9,4 +9,5 @@ public interface HistoricoProductosService {
     List<HistoricoProductosEntity> findAll();
     void deleteById(Long id);
     HistoricoProductosEntity findById(Long id);
+    List<HistoricoProductosEntity> findByCantidadProductoAlmacenId(Long cantidadProductoAlmacenId);
 }

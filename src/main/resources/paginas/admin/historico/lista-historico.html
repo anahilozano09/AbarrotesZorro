@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{plantillas/plantilla :: head}"></head>
+<body>
+<header th:replace="~{plantillas/plantilla :: header}"></header>
+<main class="container text-center shadow-lg p-3 mt-5 mb-5 bg-body-tertiary rounded">
+    <h1 class="mb-4" th:text="${contenido}"></h1>
+
+    <!-- Formulario para filtrar por fecha -->
+    <div class="row justify-content-center mb-4">
+        <div class="col-md-6">
+            <form method="get" th:action="@{/admin/historico/fecha}" class="row g-3 align-items-center">
+                <div class="col-8">
+                    <input type="date" name="fecha" id="fecha" class="form-control"
+                           th:attr="max=${fechaActual}" />
+
+                </div>
+                <div class="col-4">
+                    <button type="submit" class="btn btn-primary w-100">Filtrar por fecha</button>
+                </div>
+            </form>
+            <div th:if="${error}" class="alert alert-danger mt-3" th:text="${error}"></div>
+        </div>
+    </div>
+
+    <!-- Tabla de resultados -->
+    <table th:if="${listaHistorico != null and !listaHistorico.isEmpty()}" class="table table-bordered table-striped table-hover">
+        <thead class="table-dark">
+        <tr>
+            <th>ID Histórico</th>
+            <th>Producto</th>
+            <th>Precio Unitario</th>
+            <th>Cantidad Antes</th>
+            <th>Cantidad Después</th>
+            <th>Fecha Movimiento</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="h : ${listaHistorico}">
+            <td th:text="${h.id_historico}">1</td>
+            <td th:text="${h.nombre_producto}">Producto</td>
+            <td th:text="${'$' + #numbers.formatDecimal(h.precio_producto, 1, 2)}">100.0</td>
+            <td th:text="${h.cantidad_antes}">Antes</td>
+            <td th:text="${h.cantidad_despues}">Después</td>
+            <td th:text="${h.fecha_compra}">Fecha</td>
+
+        </tr>
+        </tbody>
+    </table>
+
+    <div th:if="${listaHistorico == null or listaHistorico.isEmpty()}" class="alert alert-info">
+        No se encontraron movimientos para la fecha seleccionada.
+    </div>
+</main>
+<footer th:replace="~{plantillas/plantilla :: footer}"></footer>
+</body>
+</html>
+
+
