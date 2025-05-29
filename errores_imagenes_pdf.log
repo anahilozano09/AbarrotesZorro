@@ -1,0 +1,24 @@
+[2025-05-29T15:11:39.182013642]
+Archivo: /home/diego/Descargas/img/Pulparindo.png
+Error: Método directo falló: file:/home/diego/Descargas/img/Pulparindo.png is not a recognized imageformat.
+--------------------------------------
+[2025-05-29T15:11:39.193687841]
+Archivo: /home/diego/Descargas/img/Pulparindo.png
+Error: ImageIO.read() devolvió null
+--------------------------------------
+[2025-05-29T15:11:39.200296692]
+Archivo: /home/diego/Descargas/img/Pulparindo.png
+Error: Todos los métodos fallaron
+--------------------------------------
+[2025-05-29T15:11:39.201260300]
+Archivo: /home/diego/Descargas/img/Chocolates_Hershey.png
+Error: Método directo falló: file:/home/diego/Descargas/img/Chocolates_Hershey.png is not a recognized imageformat.
+--------------------------------------
+[2025-05-29T15:11:39.201503140]
+Archivo: /home/diego/Descargas/img/Chocolates_Hershey.png
+Error: ImageIO.read() devolvió null
+--------------------------------------
+[2025-05-29T15:11:39.201591280]
+Archivo: /home/diego/Descargas/img/Chocolates_Hershey.png
+Error: Todos los métodos fallaron
+--------------------------------------
