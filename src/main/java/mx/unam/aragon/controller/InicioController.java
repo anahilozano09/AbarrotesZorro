@@ -13,24 +13,21 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class InicioController {
 
     @GetMapping("/")
-    public String inicio(
-            @RequestParam(value = "error", required = false) String error,
-            @RequestParam(value = "logout", required = false) String logout,
-            Model model,
-            Authentication authentication) {
+    public String inicio(Authentication authentication) {
+        if (authentication != null && authentication.isAuthenticated() &&
+                !"anonymousUser".equals(authentication.getPrincipal())) {
 
-        if (authentication != null && authentication.isAuthenticated()) {
-            Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-            for (GrantedAuthority authority : authorities) {
-                if (authority.getAuthority().equals("ROLE_ADMIN")) {
-                    return "paginas/admin/inicio";
-                } else if (authority.getAuthority().equals("ROLE_CAJERO")) {
-                    return "paginas/cajero/inicio";
-                }
+            boolean isAdmin = authentication.getAuthorities().stream()
+                    .anyMatch(a -> a.getAuthority().equals("ROLE_Administrador"));
+            boolean isCajero = authentication.getAuthorities().stream()
+                    .anyMatch(a -> a.getAuthority().equals("ROLE_Cajero"));
+
+            if (isAdmin) {
+                return "redirect:/admin";
+            } else if (isCajero) {
+                return "redirect:/cajero";
             }
         }
-
-        model.addAttribute("contenido", "Bienvenido a Abarrotes el Zorro");
         return "inicio";
     }
 

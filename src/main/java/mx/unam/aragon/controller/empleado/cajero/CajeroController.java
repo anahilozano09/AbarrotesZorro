@@ -28,6 +28,7 @@ public class CajeroController {
         return "plantillas/inicio";
     }
 
+
     @PreAuthorize("hasAuthority('ROLE_Cajero')")
     @GetMapping("alta-cliente")
     public String altaCliente(Model model){

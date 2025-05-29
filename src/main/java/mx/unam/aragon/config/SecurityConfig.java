@@ -18,6 +18,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.bind.annotation.GetMapping;
 
 import javax.sql.DataSource;
 
@@ -25,30 +26,35 @@ import javax.sql.DataSource;
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/login",
-                                "/css/**", "/js/**", "/image/**",  "/bootstrap/**").permitAll()
+                        .requestMatchers("/", "/login", "/css/**", "/js/**", "/image/**", "/bootstrap/**").permitAll()
                         .requestMatchers("/admin/**").hasAuthority("ROLE_Administrador")
-                        .requestMatchers("/caja/**").hasAuthority("ROLE_Cajero")
+                        .requestMatchers("/cajero/**").hasAuthority("ROLE_Cajero")
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
                         .loginPage("/")
                         .loginProcessingUrl("/login")
-                        .defaultSuccessUrl("/admin", true)  // Redirige aquí por defecto
                         .successHandler((request, response, authentication) -> {
-                            if (authentication.getAuthorities().stream()
-                                    .anyMatch(a -> a.getAuthority().equals("ROLE_Administrador"))) {
+                            boolean isAdmin = authentication.getAuthorities().stream()
+                                    .anyMatch(a -> a.getAuthority().equals("ROLE_Administrador"));
+                            boolean isCajero = authentication.getAuthorities().stream()
+                                    .anyMatch(a -> a.getAuthority().equals("ROLE_Cajero"));
+
+                            if (isAdmin) {
                                 response.sendRedirect("/admin");
-                            } else if (authentication.getAuthorities().stream()
-                                    .anyMatch(a -> a.getAuthority().equals("ROLE_Cajero"))) {
+                            } else if (isCajero) {
                                 response.sendRedirect("/cajero");
+                            } else {
+                                response.sendRedirect("/");
                             }
                         })
                         .failureUrl("/?error=true")
+                        .permitAll()
                 )
                 .logout(logout -> logout
                         .logoutUrl("/logout")
@@ -61,6 +67,8 @@ public class SecurityConfig {
                 )
                 .build();
     }
+
+
 
     @Bean
     CommandLineRunner initUsers(EmpleadoService empleadoService,
@@ -95,5 +103,6 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
 }
 

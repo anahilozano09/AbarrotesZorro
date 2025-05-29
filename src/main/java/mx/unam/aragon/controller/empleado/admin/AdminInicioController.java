@@ -16,4 +16,6 @@ public class AdminInicioController {
         return "plantillas/inicio";
     }
 
+
+
 }
