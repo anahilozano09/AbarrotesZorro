@@ -23,6 +23,9 @@ public class HistoricoProductosEntity {
     @Column(name="cantidad_act", nullable = false)
     private Integer cantidadAct;
 
+    @Column(name = "actualizado", nullable = false)
+    private Boolean actualizado = false;
+
     @ManyToOne
     @JoinColumn(name = "id_cad",nullable = false)
     private CantidadProductoAlmacenEntity cantidadProductoAlmacen;

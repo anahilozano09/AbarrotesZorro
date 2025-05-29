@@ -1,4 +1,3 @@
-/*<![CDATA[*/
 document.addEventListener("DOMContentLoaded", function () {
     const tipoProductoSelect = document.getElementById("tipoProducto");
     const productoSelect = document.getElementById("producto");
@@ -15,7 +14,6 @@ document.addEventListener("DOMContentLoaded", function () {
     let total = 0;
     let carrito = [];
 
-    // Si ya hay cliente cargado, habilitamos controles
     if (document.querySelector("input[name='clienteId']")) {
         tipoProductoSelect.disabled = false;
         btnFinalizarCompra.disabled = false;
@@ -99,7 +97,6 @@ document.addEventListener("DOMContentLoaded", function () {
             `;
         carritoBody.appendChild(tr);
 
-        // input con nombre 'productos[]' para que Spring lo reciba como lista
         const input = document.createElement("input");
         input.type = "hidden";
         input.name = "productos[]";
@@ -109,7 +106,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
         debugProductos.textContent = Array.from(inputsCarrito.querySelectorAll("input")).map(i => i.value).join("\n");
 
-        // Reset selección para agregar más productos
         productoSelect.selectedIndex = 0;
         cantidadInput.value = 1;
         cantidadInput.disabled = true;
@@ -133,9 +129,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     document.getElementById("formCompra").addEventListener("submit", function(e) {
-        // Opcional: si quieres depurar productos antes de enviar
         const productos = Array.from(document.querySelectorAll("input[name='productos[]']")).map(i => i.value);
         console.log("Productos a enviar:", productos);
     });
 });
-/*]]>*/

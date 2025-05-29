@@ -31,6 +31,7 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <div class="d-flex w-100">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
                         <!-- Parte del administrador -->
                         <li class="nav-item" sec:authorize="hasAuthority('ROLE_Administrador')">
                             <a class="nav-link" th:href="@{/admin}">Inicio</a>
@@ -47,8 +48,6 @@
                         <li class="nav-item" sec:authorize="hasAuthority('ROLE_Administrador')">
                             <a class="nav-link" th:href="@{/admin/historico}">Histórico del Almacén</a>
                         </li>
-
-
 
                         <!-- Parte del cajero -->
                         <li class="nav-item" sec:authorize="hasAuthority('ROLE_Cajero')">

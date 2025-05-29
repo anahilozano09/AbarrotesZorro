@@ -10,7 +10,6 @@
 
     <form th:action="@{/cajero/compra-cliente/guardar-compra}" method="post" id="formCompra">
 
-        <!-- Búsqueda de Cliente -->
         <div class="row">
             <div class="col-md-4 border-end">
 
@@ -30,14 +29,11 @@
                     </div>
                 </div>
 
-
-                <!-- Nombre del cliente -->
                 <div th:if="${cliente != null}" class="d-flex justify-content-center mb-3">
                     <strong>Cliente:</strong> <span th:text="${cliente.nombre}"></span>
                     <input type="hidden" name="clienteId" th:value="${cliente.id}" />
                 </div>
 
-                <!-- Tipo de Producto -->
                 <label class="ms-4" for="tipoProducto" style="font-size: 1.5rem">Tipo de Producto:</label>
                 <select id="tipoProducto" name="tipoProductoId" class="form-select mt-3 mb-3"
                         th:disabled="${cliente == null}">
@@ -45,30 +41,25 @@
                     <option th:each="t : ${tipoProducto}" th:value="${t.id}" th:text="${t.tipo}"></option>
                 </select>
 
-                <!-- Producto -->
                 <label class="ms-4" for="producto" style="font-size: 1.5rem">Producto:</label>
                 <select id="producto" class="form-select mt-3 mb-3" disabled>
                     <option value="">-- Selecciona un producto --</option>
                 </select>
 
-                <!-- Cantidad -->
                 <div class="d-flex flex-column align-items-center mt-5 ms-4 mb-5">
                     <label for="cantidad" style="font-size: 1.5rem">Cantidad:</label>
                     <input type="number" id="cantidad" class="form-control text-center" min="1" value="1" style="max-width: 100px;" required disabled/>
                 </div>
 
-                <!-- Botón de añadir al carrito -->
                 <div class="d-flex justify-content-center mt-5 mb-3">
                     <button type="button" class="custom-button btn btn-primary" style="font-size: 1.2rem" id="btnAgregarCarrito" disabled>Añadir al carrito</button>
                 </div>
 
-                <!-- Botón de finalizar compra -->
                 <div class="d-flex justify-content-center mt-5">
                     <button type="submit" class="custom-button btn btn-success" style="font-size: 1.2rem" id="btnFinalizarCompra" disabled>Finalizar Compra</button>
                 </div>
             </div>
 
-            <!-- Carrito -->
             <div class="col-md-8 d-flex flex-column justify-content-between" style="min-height: 400px;">
                 <div>
                     <h3>Carrito</h3>
@@ -92,7 +83,6 @@
             </div>
         </div>
 
-        <!-- Inputs ocultos para enviar productos y cantidades -->
         <div id="inputsCarrito"></div>
 
     </form>

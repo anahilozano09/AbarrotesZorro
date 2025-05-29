@@ -17,7 +17,6 @@
         <div class="row justify-content-center">
             <div class="col-md-8 col-lg-6">
 
-                <!-- Nombre -->
                 <div class="form-floating mb-4">
                     <input
                             th:class="${#fields.hasErrors('nombre')} ? 'form-control is-invalid' : 'form-control'"
@@ -28,7 +27,6 @@
                     <label for="nombre">Nombre</label>
                 </div>
 
-                <!-- Email -->
                 <div class="form-floating mb-4">
                     <input
                             th:class="${#fields.hasErrors('email')} ? 'form-control is-invalid' : 'form-control'"
@@ -39,7 +37,6 @@
                     <label for="email">Email</label>
                 </div>
 
-                <!-- Teléfono -->
                 <div class="form-floating mb-4">
                     <input
                             th:class="${#fields.hasErrors('telefono')} ? 'form-control is-invalid' : 'form-control'"
@@ -50,7 +47,6 @@
                     <label for="telefono">Teléfono</label>
                 </div>
 
-                <!-- Número de Cuenta -->
                 <div class="mb-4">
                     <label for="numCuenta" class="form-label fw-bold">Tu número de cuenta es:</label>
                     <div class="input-group">
@@ -65,7 +61,6 @@
                     </div>
                 </div>
 
-                <!-- Botón Guardar -->
                 <div class="d-grid gap-2 mt-4">
                     <button type="submit" class="btn btn-primary btn-lg custom-button">Guardar</button>
                 </div>
@@ -87,7 +82,7 @@
             <a th:href="@{/cajero/compra-cliente}" class="btn btn-primary custom-button" style="width: 7rem; height: 3rem;font-size: 1.2rem">Comprar</a>
         </div>
     </div>
-    <!-- Mostrar imagen -->
+
     <div class="d-flex justify-content-center mt-5">
         <img th:src="@{'/external-images/zorro.gif'}" alt="Zorro animado" style="max-width: 300px; height: auto;">
     </div>

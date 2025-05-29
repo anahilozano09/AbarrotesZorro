@@ -21,7 +21,6 @@ public class EmailService {
     @Value("${spring.mail.password}")
     private String password;
 
-    // Método simplificado para enviar correo con adjunto
     public void enviarCorreoConAdjunto(String to, String subject, String body, File attachment) {
         try {
             Properties props = new Properties();
@@ -44,7 +43,7 @@ public class EmailService {
 
             // Crear partes del mensaje
             MimeBodyPart textoPart = new MimeBodyPart();
-            textoPart.setText(body);  // Usamos texto plano
+            textoPart.setText(body);
 
             MimeBodyPart adjuntoPart = new MimeBodyPart();
             adjuntoPart.attachFile(attachment);
@@ -63,11 +62,9 @@ public class EmailService {
         }
     }
 
-    // Método para enviar PDF directamente desde ByteArrayOutputStream
     public void enviarCorreoConPDF(String destinatario, String asunto, String cuerpo,
                                    ByteArrayOutputStream pdfStream, String nombreArchivo) {
         try {
-            // Convertir ByteArrayOutputStream a InputStream
             InputStream inputStream = new ByteArrayInputStream(pdfStream.toByteArray());
 
             Properties props = new Properties();
@@ -108,7 +105,6 @@ public class EmailService {
         }
     }
 
-    // Clase interna para manejar DataSource desde InputStream
     private static class InputStreamDataSource implements DataSource {
         private final InputStream inputStream;
         private final String contentType;

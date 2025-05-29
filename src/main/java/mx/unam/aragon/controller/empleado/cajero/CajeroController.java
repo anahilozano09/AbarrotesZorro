@@ -62,11 +62,9 @@ public class CajeroController {
             return "cajero/alta-cliente";
         }
 
-
-        // Guardar el cliente
         clienteService.save(cliente);
         model.addAttribute("nuevoNumCuenta", cliente.getNumCuenta());
-        model.addAttribute("cliente", new ClienteEntity()); // limpia el formulario
+        model.addAttribute("cliente", new ClienteEntity());
         model.addAttribute("contenido", "Alta Cliente");
         return "cajero/alta-cliente";
 

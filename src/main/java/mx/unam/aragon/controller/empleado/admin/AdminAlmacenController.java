@@ -108,4 +108,5 @@ public class AdminAlmacenController {
 
         return new ResponseEntity<>(bytes, headers, HttpStatus.OK);
     }
+
 }

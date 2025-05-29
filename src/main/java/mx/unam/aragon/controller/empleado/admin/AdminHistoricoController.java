@@ -83,7 +83,6 @@ public class AdminHistoricoController {
             CompraClienteEntity compra = h.getCompraCliente();
             int cantidadDespues = h.getCantidadAct();
 
-            // Calcular cantidad antes basada en los detalles de compra
             int cantidadRestada = compra.getDetalles().stream()
                     .filter(det -> det.getProducto().getId().equals(producto.getId()))
                     .mapToInt(DetalleCompraClienteEntity::getCantidad)

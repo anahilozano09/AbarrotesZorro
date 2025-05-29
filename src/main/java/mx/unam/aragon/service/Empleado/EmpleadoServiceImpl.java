@@ -7,6 +7,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,21 +17,25 @@ public class EmpleadoServiceImpl implements EmpleadoService, UserDetailsService 
     @Autowired
     EmpleadoRepository empleadoRepository;
     @Override
+    @Transactional
     public EmpleadoEntity save(EmpleadoEntity empleado) {
         return empleadoRepository.save(empleado);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<EmpleadoEntity> findAll() {
         return empleadoRepository.findAll();
     }
 
     @Override
+    @Transactional
     public void deleteById(Long id) {
         empleadoRepository.deleteById(id);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public EmpleadoEntity findById(Long id) {
         Optional<EmpleadoEntity> op = empleadoRepository.findById(id);
         return op.orElse(null);
@@ -42,6 +47,7 @@ public class EmpleadoServiceImpl implements EmpleadoService, UserDetailsService 
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<EmpleadoEntity> findByUsername(String username) {
         return empleadoRepository.findByUsername(username);
     }

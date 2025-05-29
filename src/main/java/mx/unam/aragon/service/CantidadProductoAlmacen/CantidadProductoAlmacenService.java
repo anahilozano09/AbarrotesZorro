@@ -11,6 +11,7 @@ public interface CantidadProductoAlmacenService {
     CantidadProductoAlmacenEntity findById(Long id);
     List<CantidadProductoAlmacenEntity> findByTipoProducto(Long idTipoProducto);
     CantidadProductoAlmacenEntity findByProductoId(Long idProducto);
+    void actualizarCantidadProductoAlmacen();
 }
 
 

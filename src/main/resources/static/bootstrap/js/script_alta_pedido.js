@@ -1,25 +1,14 @@
-// pedidos.js - Gestión de pedidos a proveedores
-
-/**
- * Inicializa la funcionalidad de pedidos
- */
 function initPedidos() {
-    // Verificar si jQuery está disponible
     if (typeof jQuery === 'undefined') {
         showJqueryError();
         return;
     }
 
-    // Configurar eventos
     setupEventListeners();
 
-    // Estado inicial
     resetFormState();
 }
 
-/**
- * Muestra error cuando jQuery no está disponible
- */
 function showJqueryError() {
     $('#proveedorInfo').html(`
         <tr>
@@ -31,36 +20,26 @@ function showJqueryError() {
     `);
 }
 
-/**
- * Configura todos los event listeners
- */
 function setupEventListeners() {
     $(document).ready(function() {
-        // Cambio de tipo de producto
         $('#tipoProductoSelect').on('change', function() {
             handleTipoProductoChange();
         });
 
-        // Cambio de producto
         $('#productoSelect').on('change', function() {
             handleProductoChange();
         });
 
-        // Cambio de cantidad
         $('#cantidad').on('change', function() {
             handleCantidadChange();
         });
 
-        // Envío de formulario
         $('#formFinalizar').on('submit', function(e) {
             return validateForm(e);
         });
     });
 }
 
-/**
- * Maneja el cambio en el selector de tipo de producto
- */
 function handleTipoProductoChange() {
     const tipoId = $('#tipoProductoSelect').val();
 
@@ -71,9 +50,6 @@ function handleTipoProductoChange() {
     }
 }
 
-/**
- * Maneja el cambio en el selector de productos
- */
 function handleProductoChange() {
     const productoId = $('#productoSelect').val();
 
@@ -85,9 +61,6 @@ function handleProductoChange() {
     }
 }
 
-/**
- * Maneja el cambio en la cantidad
- */
 function handleCantidadChange() {
     const cantidad = $('#cantidad').val();
 
@@ -99,9 +72,6 @@ function handleCantidadChange() {
     }
 }
 
-/**
- * Valida el formulario antes de enviarlo
- */
 function validateForm(e) {
     if(!$('#inputProducto').val() || $('#inputProducto').val() === "0") {
         e.preventDefault();
@@ -118,9 +88,6 @@ function validateForm(e) {
     return true;
 }
 
-/**
- * Carga productos según el tipo seleccionado
- */
 function loadProductos(tipoId) {
     $.ajax({
         url: '/admin/pedido/productos-por-tipo',
@@ -141,9 +108,6 @@ function loadProductos(tipoId) {
     });
 }
 
-/**
- * Actualiza el selector de productos
- */
 function updateProductSelect(productos) {
     const $select = $('#productoSelect');
     $select.empty().append('<option value="0">Seleccione un producto</option>');
@@ -158,9 +122,6 @@ function updateProductSelect(productos) {
     }
 }
 
-/**
- * Resetea el selector de productos
- */
 function resetProductos() {
     $('#productoSelect').empty()
         .append('<option value="0">Seleccione un producto</option>')
@@ -168,16 +129,10 @@ function resetProductos() {
     resetProveedorInfo();
 }
 
-/**
- * Resetea la información del proveedor
- */
 function resetProveedorInfo() {
     $('#proveedorInfo').html('<tr><td colspan="3">Seleccione un producto</td></tr>');
 }
 
-/**
- * Carga la información del proveedor
- */
 function loadProveedor(productoId) {
     $.ajax({
         url: '/admin/pedido/provedoor-por-producto',
@@ -195,9 +150,6 @@ function loadProveedor(productoId) {
     });
 }
 
-/**
- * Actualiza la información del proveedor
- */
 function updateProveedorInfo(proveedor) {
     if (proveedor) {
         $('#proveedorInfo').html(`
@@ -212,16 +164,12 @@ function updateProveedorInfo(proveedor) {
     }
 }
 
-/**
- * Establece el estado inicial del formulario
- */
 function resetFormState() {
     $('#productoSelect').prop('disabled', true);
     $('#inputCantidad').val(1);
     resetProveedorInfo();
 }
 
-// Iniciar la aplicación cuando el documento esté listo
 $(document).ready(function() {
     initPedidos();
 });

@@ -16,14 +16,4 @@ public class AdminInicioController {
         return "plantillas/inicio";
     }
 
-
-//    @PreAuthorize("hasAuthority('ROLE_Administrador')")
-//    @GetMapping("pedidos")
-//    public String pedidos(Model model){
-//        List<PedidoProveedorEntity> lista = pedidoProveedorService.findAll();
-//        model.addAttribute("lista",lista);
-//        model.addAttribute("contenido","Pedidos a proveedor");
-//        return "admin/almacen/pedido-proveedor";
-//    }
-
 }

@@ -129,7 +129,6 @@ public class CajeroCompraClienteController {
                 .total(0.0)
                 .build();
 
-        // Guardar la compra primero para evitar errores de entidad transitoria
         compraClienteService.save(compra);
 
         List<DetalleCompraClienteEntity> detalles = new ArrayList<>();
@@ -174,18 +173,17 @@ public class CajeroCompraClienteController {
             HistoricoProductosEntity historico = HistoricoProductosEntity.builder()
                     .cantidadAct(stock.getCantidad())
                     .cantidadProductoAlmacen(stock)
-                    .compraCliente(compra) // Ya persistida
+                    .compraCliente(compra)
                     .build();
             historicoProductosService.save(historico);
         }
 
         compra.setTotal(totalCompra);
         compra.setDetalles(detalles);
-        compraClienteService.save(compra); // Actualiza la compra con total y detalles
+        compraClienteService.save(compra);
 
         if (cliente.getEmail() != null && !cliente.getEmail().isEmpty()) {
             try {
-                // 1. Crear lista de productos para el PDF
                 List<PDFGenerador.ProductoCompra> productosPDF = new ArrayList<>();
                 for (DetalleCompraClienteEntity detalle : detalles) {
                     ProductoEntity p = detalle.getProducto();
@@ -197,13 +195,11 @@ public class CajeroCompraClienteController {
                     ));
                 }
 
-                // 2. Generar PDF en archivo temporal
                 java.io.File tempFile = java.io.File.createTempFile("factura_", ".pdf");
                 try (java.io.FileOutputStream fos = new java.io.FileOutputStream(tempFile)) {
                     pdfGenerador.generarFactura(productosPDF, fos);
                 }
 
-                // 3. Enviar correo con adjunto
                 String asunto = "Factura de su compra - " + LocalDate.now();
                 String cuerpo = "Estimado " + cliente.getNombre() + ",\n\n"
                         + "Adjuntamos la factura de su compra realizada el "
@@ -218,7 +214,6 @@ public class CajeroCompraClienteController {
                         tempFile
                 );
 
-                // 4. Eliminar archivo temporal
                 tempFile.delete();
 
                 redirectAttributes.addFlashAttribute("success", "Compra registrada y factura enviada al correo!");
@@ -232,7 +227,6 @@ public class CajeroCompraClienteController {
             redirectAttributes.addFlashAttribute("avisoCorreo",
                     "Compra exitosa, pero el cliente no tiene email registrado");
         }
-        // ====================================================
 
         return "redirect:/cajero/compra-cliente";
     }

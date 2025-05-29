@@ -72,7 +72,7 @@ CREATE TABLE compra_cliente (
     id_cliente INT NOT NULL ,
     id_emp INT NOT NULL ,
     total DOUBLE NOT NULL,
-    fecha DATE NOT NULL ,
+    fecha DATETIME NOT NULL ,
     FOREIGN KEY (id_cliente) REFERENCES cliente(id_clien),
     FOREIGN KEY (id_emp) REFERENCES empleado(id_emp)
 );
@@ -101,6 +101,7 @@ CREATE TABLE historico_productos (
     id_cad INT NOT NULL ,
     id_compra INT NOT NULL ,
     cantidad_act INT NOT NULL ,
+    actualizado BOOLEAN,
     FOREIGN KEY (id_cad) REFERENCES cantidad_producto_almacen(id_cad),
     FOREIGN KEY (id_compra) REFERENCES compra_cliente(id_compra)
 );
