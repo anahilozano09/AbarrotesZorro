@@ -39,10 +39,10 @@
                             <a class="nav-link" th:href="@{/admin/almacen}">Almacen</a>
                         </li>
                         <li class="nav-item" sec:authorize="hasAuthority('ROLE_Administrador')">
-                            <a class="nav-link" th:href="@{/admin/pedido}">Pedidos</a>
+                            <a class="nav-link" th:href="@{/admin/pedido/alta-pedido}">Pedido nuevo</a>
                         </li>
                         <li class="nav-item" sec:authorize="hasAuthority('ROLE_Administrador')">
-                            <a class="nav-link" th:href="@{/admin/pedido/alta-pedido}">Pedido nuevo</a>
+                            <a class="nav-link" th:href="@{/admin/pedido}">Pedidos</a>
                         </li>
 
 
