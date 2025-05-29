@@ -43,4 +43,9 @@ public class ProductoServiceImpl implements ProductoService {
     public ProductoEntity findByTipoProducto(TipoProductoEntity tipoProducto) {
         return productoRepository.findByTipoProducto(tipoProducto);
     }
+
+    @Override
+    public ProductoEntity findByProveedorId(Long proveedorId) {
+        return productoRepository.findByProveedorId(proveedorId);
+    }
 }

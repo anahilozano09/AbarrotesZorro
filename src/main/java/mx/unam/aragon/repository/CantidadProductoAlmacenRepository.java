@@ -11,5 +11,6 @@ public interface CantidadProductoAlmacenRepository extends JpaRepository<Cantida
             "JOIN c.producto p " +
             "WHERE p.tipoProducto.id = :idTipoProducto")
     List<CantidadProductoAlmacenEntity> findByTipoProducto(Long idTipoProducto);
+    CantidadProductoAlmacenEntity findByProductoId(Long productoId);
 }
 

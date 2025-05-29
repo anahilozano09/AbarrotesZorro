@@ -33,4 +33,9 @@ public class PedidoProveedorServiceImpl implements PedidoProveedorService {
         Optional<PedidoProveedorEntity> op = pedidoProveedorRepository.findById(id);
         return op.orElse(null);
     }
+
+    @Override
+    public PedidoProveedorEntity findByProductoId(Long productoId) {
+        return pedidoProveedorRepository.findByProductoId(productoId);
+    }
 }

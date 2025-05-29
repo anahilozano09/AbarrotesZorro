@@ -34,9 +34,6 @@ public class CompraClienteEntity {
     @JoinColumn(name = "id_emp",nullable = false)
     private EmpleadoEntity empleado;
 
-    @ManyToOne
-    @JoinColumn(name = "id_prodcomp",nullable = false)
-    private ProductoCompradoEntity productoComprado;
 
 
 }
