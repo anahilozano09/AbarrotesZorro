@@ -111,7 +111,6 @@ public class CajeroCompraClienteController {
             CompraClienteEntity compraCliente = CompraClienteEntity.builder()
                     .cliente(cliente)
                     .empleado(empleado)
-                    .producto(productos)
                     .fecha(LocalDate.now())
                     .total(0.0)
                     .build();
