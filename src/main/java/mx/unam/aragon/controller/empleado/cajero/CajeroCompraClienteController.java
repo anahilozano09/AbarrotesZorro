@@ -201,10 +201,12 @@ public class CajeroCompraClienteController {
                 }
 
                 String asunto = "Factura de su compra - " + LocalDate.now();
-                String cuerpo = "Estimado " + cliente.getNombre() + ",\n\n"
+                String totalFormateado = String.format("%.2f", totalCompra);
+
+                String cuerpo = "Estimad@ " + cliente.getNombre() + ",\n\n"
                         + "Adjuntamos la factura de su compra realizada el "
                         + compra.getFecha().toLocalDate() + ".\n"
-                        + "Total: $" + totalCompra + "\n\n"
+                        + "Total: $" + totalFormateado + "\n\n"
                         + "Gracias por su preferencia!";
 
                 emailService.enviarCorreoConAdjunto(
