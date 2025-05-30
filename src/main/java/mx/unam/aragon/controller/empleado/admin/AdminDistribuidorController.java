@@ -45,7 +45,6 @@ public class AdminDistribuidorController {
     public String pedidosProveedor(Model model) {
         List<PedidoProveedorEntity> lista = pedidoProveedorService.findAll();
         model.addAttribute("lista",lista);
-        model.addAttribute("contenido","Pedidos a proveedor");
         return "admin/pedido/lista-pedido";
     }
 
@@ -60,7 +59,6 @@ public class AdminDistribuidorController {
         } else {
             model.addAttribute("listaProducto",Collections.emptyList());
         }
-        model.addAttribute("contenido", "Pedido al proveedor");
         return "admin/pedido/alta-pedido";
     }
 
@@ -68,9 +66,9 @@ public class AdminDistribuidorController {
     @GetMapping("productos-por-tipo")
     @ResponseBody
     public List<ProductoEntity> getProductosByTipoProducto(@RequestParam Long idTipoProducto) {
-        System.out.println(">>> SOLICITUD RECIBIDA - Tipo ID: " + idTipoProducto);
+        System.out.println("Id del tipo de producto: " + idTipoProducto);
         List<ProductoEntity> productos = productoService.findByTipoProductoId(idTipoProducto);
-        System.out.println(">>> PRODUCTOS ENCONTRADOS: " + productos.size());
+        System.out.println("Productos encontrados: " + productos.size());
         return productos;
     }
 
@@ -100,7 +98,7 @@ public class AdminDistribuidorController {
 
             pedidoProveedorService.save(pedido);
 
-            redirectAttributes.addFlashAttribute("mensaje", "Pedido solicitado correctamente");
+            redirectAttributes.addFlashAttribute("contenido", "Pedido solicitado correctamente");
 
             return "redirect:/admin/pedido/enviar-correo?idPedido=" + pedido.getId();
         }
@@ -169,8 +167,8 @@ public class AdminDistribuidorController {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            model.addFlashAttribute("contenido", "El correo se mando con éxito");
-            return "redirect:/admin/pedido/alta-pedido";
+            model.addAttribute("contenido", "El correo se mando con éxito");
+            return "/admin/pedido/alta-pedido";
         }
 
     }

@@ -9,7 +9,8 @@
 <header th:replace="~{plantillas/plantilla :: header}"></header>
 
 <main class="container custom-container shadow-lg p-3 mt-5 mb-5 bg-body-tertiary rounded">
-    <h1 class="mb-4" th:text="${contenido}"></h1>
+    <h1 class="mb-4">Pedidos a proveedor</h1>
+    <h3 class="mb-4" th:text="${contenido}"></h3>
 
     <div th:if="${mensaje}" class="alert alert-success" th:text="${mensaje}"></div>
     <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
