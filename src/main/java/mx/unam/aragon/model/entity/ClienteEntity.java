@@ -29,7 +29,10 @@ public class ClienteEntity {
     private String numCuenta;
 
     @NotBlank(message = "El email es obligatorio")
-    @Email(message = "El formato del email no es válido")
+    @Pattern(
+            regexp = "^[a-zA-Zá-źÁ-Ź0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$",
+            message = "El formato del email no es válido. Debe ser como: usuario@dominio.com"
+    )
     @Column(name="email", nullable = false)
     private String email;
 
