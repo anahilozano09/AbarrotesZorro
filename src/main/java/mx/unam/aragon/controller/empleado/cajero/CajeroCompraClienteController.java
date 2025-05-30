@@ -69,7 +69,6 @@ public class CajeroCompraClienteController {
     @GetMapping
     public String mostrarFormulario(Model model) {
         model.addAttribute("tipoProducto", tipoProductoService.findAll());
-        model.addAttribute("contenido", "Compra de cliente");
         return "cajero/alta-compraCliente";
     }
 
@@ -81,7 +80,7 @@ public class CajeroCompraClienteController {
         model.addAttribute("tipoProducto", tipoProductoService.findAll());
 
         if (clienteOpt.isEmpty()) {
-            model.addAttribute("error", "Cliente no encontrado con ese dato.");
+            model.addAttribute("contenido", "Cliente no encontrado con ese dato.");
         } else {
             model.addAttribute("cliente", clienteOpt.get());
         }
@@ -105,7 +104,7 @@ public class CajeroCompraClienteController {
         Optional<ClienteEntity> clienteOpt = buscarClientePorCriterios(valorBusqueda);
 
         if (clienteOpt.isEmpty()) {
-            model.addAttribute("error", "Cliente no encontrado.");
+            model.addAttribute("contenido", "Cliente no encontrado.");
             model.addAttribute("tipoProducto", tipoProductoService.findAll());
             return "cajero/alta-compraCliente";
         }
@@ -113,7 +112,6 @@ public class CajeroCompraClienteController {
         ClienteEntity cliente = clienteOpt.get();
 
         if (productos == null || productos.isEmpty()) {
-            model.addAttribute("error", "No se seleccionaron productos para la compra.");
             model.addAttribute("cliente", cliente);
             model.addAttribute("tipoProducto", tipoProductoService.findAll());
             return "cajero/alta-compraCliente";
@@ -151,7 +149,7 @@ public class CajeroCompraClienteController {
             CantidadProductoAlmacenEntity stock = cantidadProductoAlmacenService.findByProductoId(productoId);
 
             if (producto == null || stock == null || stock.getCantidad() < cantidad) {
-                model.addAttribute("error", "Producto no disponible o stock insuficiente: " + (producto != null ? producto.getNombre() : "ID " + productoId));
+                model.addAttribute("contenido", "Producto no disponible o stock insuficiente: " + (producto != null ? producto.getNombre() : "ID " + productoId));
                 model.addAttribute("cliente", cliente);
                 model.addAttribute("tipoProducto", tipoProductoService.findAll());
                 return "cajero/alta-compraCliente";
@@ -218,7 +216,7 @@ public class CajeroCompraClienteController {
 
                 tempFile.delete();
 
-                redirectAttributes.addFlashAttribute("success", "Compra registrada y factura enviada al correo!");
+                redirectAttributes.addFlashAttribute("contenido", "Compra registrada y factura enviada al correo!");
 
             } catch (Exception e) {
                 e.printStackTrace();

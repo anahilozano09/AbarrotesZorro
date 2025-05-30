@@ -6,6 +6,7 @@
 
 <main class="container custom-container shadow-lg p-3 mt-5 mb-5 bg-body-tertiary rounded">
     <h1 class="text-center mb-5">Registrar Compra de Cliente</h1>
+    <h3 class="text-center mb-5" th:text="${contenido}"></h3>
     <br>
 
     <form th:action="@{/cajero/compra-cliente/guardar-compra}" method="post" id="formCompra">
